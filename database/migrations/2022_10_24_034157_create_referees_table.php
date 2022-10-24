@@ -18,12 +18,13 @@ return new class extends Migration
             $table->string('fullname');
             $table->string('contact')->unique();
             $table->string('email')->unique();
+            $table->string('password');
             $table->string('ppcopy' , 512);
             $table->string('visapage' , 512);
             $table->string('emiratesIdFront' , 512);
             $table->string('emiratesIdBack' , 512);
             $table->string('bank');
-            $table->string('bankAccountNumber');
+            $table->string('bankAccountNumber')->unique();
             $table->string('bankAccountName');
             $table->boolean('phoneVerified')->default(false);
             $table->timestamps();
