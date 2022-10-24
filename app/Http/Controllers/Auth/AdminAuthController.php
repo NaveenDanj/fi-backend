@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 
 class AdminAuthController extends Controller
 {
-    
+
     public function adminRegister(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -39,6 +39,39 @@ class AdminAuthController extends Controller
 
     public function adminLogin(Request $request){
 
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'email' => 'required|string|email|unique:users',
+            'password' =>  'required',
+            'deviceType' =>  'required'
+        ]);
+
+        $admin_user = Admin::where('email' , $request->email)->first();
+
+        if($admin_user == null){
+            return response()->json([
+                'message' => 'User not found'
+            ] , 404);
+        }
+
+        if (! Hash::check($request->password, $admin_user->password)) {
+
+            return response()->json([
+                'message' => 'Email or password is incorrect'
+            ] , 401);
+
+        }
+
+        $token = $admin_user->createToken('default')->plainTextToken;
+        // return the token
+        return response()->json([
+            'token' => $token,
+            'user' => $admin_user
+        ] , 200);
+
+    }
+
+    public function currentAdminUser(Request $request){
+        return $request->user();
     }
 
 }
