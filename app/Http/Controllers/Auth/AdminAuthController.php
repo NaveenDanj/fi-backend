@@ -5,6 +5,8 @@ use App\Models\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Auth;
 
 class AdminAuthController extends Controller
 {
@@ -32,7 +34,7 @@ class AdminAuthController extends Controller
 
         return response()->json([
             'token' => $token,
-            'user' => $user
+            'user' => $admin_user
         ] , 200);
 
     }
@@ -42,36 +44,30 @@ class AdminAuthController extends Controller
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'email' => 'required|string|email|unique:users',
             'password' =>  'required',
-            'deviceType' =>  'required'
         ]);
 
-        $admin_user = Admin::where('email' , $request->email)->first();
+        if(Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])){
 
-        if($admin_user == null){
+            $admin_user = Auth::guard('admin')->user();
+
+            $token = $admin_user->createToken('MyApp' , ['admin'])->plainTextToken;
+            // return the token
             return response()->json([
-                'message' => 'User not found'
-            ] , 404);
-        }
+                'token' => $token,
+                'user' => $admin_user
+            ] , 200);
 
-        if (! Hash::check($request->password, $admin_user->password)) {
-
+        }else{
             return response()->json([
                 'message' => 'Email or password is incorrect'
             ] , 401);
-
         }
-
-        $token = $admin_user->createToken('default')->plainTextToken;
-        // return the token
-        return response()->json([
-            'token' => $token,
-            'user' => $admin_user
-        ] , 200);
 
     }
 
     public function currentAdminUser(Request $request){
-        return $request->user();
+        $admin_user = Auth::user();
+        return $admin_user;
     }
 
 }

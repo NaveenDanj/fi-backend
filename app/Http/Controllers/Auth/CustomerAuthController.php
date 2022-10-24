@@ -5,10 +5,10 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-
+use Auth;
 class CustomerAuthController extends Controller
 {
-    
+
     public function customerRegister(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -28,10 +28,26 @@ class CustomerAuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = $user->createToken($request->deviceType)->plainTextToken;
+        if(Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])){
+
+            $user = Auth::guard('web')->user();
+
+            $token = $user->createToken('MyApp' , ['user'])->plainTextToken;
+            // return the token
+            return response()->json([
+                'token' => $token,
+                'user' => $user
+            ] , 200);
+
+        }else{
+            return response()->json([
+                'message' => 'Email or password is incorrect'
+            ] , 401);
+        }
+
+
 
         return response()->json([
-            'token' => $token,
             'user' => $user
         ] , 200);
 
@@ -45,33 +61,34 @@ class CustomerAuthController extends Controller
             'deviceType' =>  'required'
         ]);
 
-        $user =  User::where('email' , $request->email)->first();
+        if(Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])){
 
-        if($user == null){
+            $user = Auth::guard('web')->user();
+
+            $token = $user->createToken('MyApp' , ['user'])->plainTextToken;
+            // return the token
             return response()->json([
-                'message' => 'User not found'
-            ] , 404);
-        }
+                'token' => $token,
+                'user' => $user
+            ] , 200);
 
-        if (! Hash::check($request->password, $user->password)) {
-
+        }else{
             return response()->json([
                 'message' => 'Email or password is incorrect'
             ] , 401);
-
         }
-
-        $token = $user->createToken('default')->plainTextToken;
-        // return the token
-        return response()->json([
-            'token' => $token,
-            'user' => $user
-        ] , 200);
 
     }
 
     public function currentUser(Request $request){
-        return $request->user();
+        $admin_user = Auth::user();
+        return $admin_user;
+    }
+
+    public function testRoute(){
+        return response()->json([
+            'message' => 'hello'
+        ]);
     }
 
 }
