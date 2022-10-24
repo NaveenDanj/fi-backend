@@ -70,5 +70,8 @@ class CustomerAuthController extends Controller
 
     }
 
+    public function currentUser(Request $request){
+        return $request->user();
+    }
 
 }

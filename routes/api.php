@@ -23,4 +23,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::prefix('auth')->group(function (){
     Route::post('/customer-register' , [CustomerAuthController::class , 'customerRegister']);
     Route::post('/customer-login' , [CustomerAuthController::class , 'customerLogin']);
+    Route::middleware('auth:sanctum')->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
 });
