@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('referee_otps', function (Blueprint $table) {
+        Schema::create('referee_wallets', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('userId');
-            $table->integer('otp');
-            $table->timestamp('expireTime');
-            $table->boolean('blocked');
+            $table->decimal('balance' , 19,2);
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('referee_otps');
+        Schema::dropIfExists('referee_wallets');
     }
 };
