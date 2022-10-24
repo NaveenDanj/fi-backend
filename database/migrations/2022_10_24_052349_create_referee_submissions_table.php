@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('wallet_transactions', function (Blueprint $table) {
+        Schema::create('referee_submissions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('userId');
-            $table->bigInteger('walletId');
-            $table->string('transactionType' , 15);
+            $table->string('submissionType' , 50);
+            $table->bigInteger('submissionId');
+            $table->bigInteger('refereeId');
+            $table->string('status' , 20);
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('wallet_transactions');
+        Schema::dropIfExists('referee_submissions');
     }
 };
