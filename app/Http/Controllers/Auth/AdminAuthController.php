@@ -30,12 +30,22 @@ class AdminAuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $token = $admin_user->createToken($request->deviceType)->plainTextToken;
+        if(Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])){
 
-        return response()->json([
-            'token' => $token,
-            'user' => $admin_user
-        ] , 200);
+            $admin_user = Auth::guard('admin')->user();
+
+            $token = $admin_user->createToken('MyApp' , ['admin'])->plainTextToken;
+            // return the token
+            return response()->json([
+                'token' => $token,
+                'user' => $admin_user
+            ] , 200);
+
+        }else{
+            return response()->json([
+                'message' => 'Email or password is incorrect'
+            ] , 401);
+        }
 
     }
 

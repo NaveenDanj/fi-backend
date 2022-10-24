@@ -85,10 +85,4 @@ class CustomerAuthController extends Controller
         return $admin_user;
     }
 
-    public function testRoute(){
-        return response()->json([
-            'message' => 'hello'
-        ]);
-    }
-
 }

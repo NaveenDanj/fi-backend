@@ -27,8 +27,6 @@ Route::prefix('auth')->group(function (){
     Route::post('/customer-register' , [CustomerAuthController::class , 'customerRegister']);
     Route::post('/customer-login' , [CustomerAuthController::class , 'customerLogin']);
     Route::middleware(['auth:sanctum' , 'abilities:web'])->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
-    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/test' , [CustomerAuthController::class , 'testRoute']);
-
     // admin
     Route::post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
     Route::post('/admin-login' , [AdminAuthController::class , 'adminLogin']);
