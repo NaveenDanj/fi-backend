@@ -56,6 +56,10 @@ class AdminAuthController extends Controller
             'password' =>  'required',
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
         if(Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])){
 
             $admin_user = Auth::guard('admin')->user();

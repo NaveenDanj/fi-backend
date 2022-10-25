@@ -46,6 +46,11 @@ return [
             'provider' => 'admins',
         ],
 
+        'referee' => [
+            'driver' => 'session',
+            'provider' => 'referees',
+        ],
+
     ],
 
     /*
@@ -75,6 +80,11 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
         ],
+
+        'referees' => [
+            'driver' => 'eloquent',
+            'model' => App\Model\Referee::class,
+        ]
 
         // 'users' => [
         //     'driver' => 'database',

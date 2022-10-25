@@ -61,6 +61,10 @@ class CustomerAuthController extends Controller
             'deviceType' =>  'required'
         ]);
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
         if(Auth::guard('web')->attempt(['email' => $request->email, 'password' => $request->password])){
 
             $user = Auth::guard('web')->user();
