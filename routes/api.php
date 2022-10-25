@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
+use App\Http\Controllers\Auth\RefereeAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,4 +32,9 @@ Route::prefix('auth')->group(function (){
     Route::post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
     Route::post('/admin-login' , [AdminAuthController::class , 'adminLogin']);
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/admin-me' , [AdminAuthController::class , 'currentAdminUser']);
+
+    // referee registration steps
+    Route::post('/referee-register-step1' , [RefereeAuthController::class , 'refereeRegisterStep1']);
+    Route::post('/referee-register-step2' , [RefereeAuthController::class , 'refereeRegisterStep2']);
+
 });

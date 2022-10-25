@@ -30,4 +30,6 @@ class Referee extends Authenticatable
         'password'
     ];
 
+    protected $guard = 'referee';
+
 }

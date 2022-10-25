@@ -71,6 +71,7 @@ return [
     */
 
     'providers' => [
+
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
@@ -83,7 +84,7 @@ return [
 
         'referees' => [
             'driver' => 'eloquent',
-            'model' => App\Model\Referee::class,
+            'model' => App\Models\Referee::class,
         ]
 
         // 'users' => [
