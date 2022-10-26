@@ -28,6 +28,7 @@ Route::prefix('auth')->group(function (){
     Route::post('/customer-register' , [CustomerAuthController::class , 'customerRegister']);
     Route::post('/customer-login' , [CustomerAuthController::class , 'customerLogin']);
     Route::middleware(['auth:sanctum' , 'abilities:web'])->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
+
     // admin
     Route::post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
     Route::post('/admin-login' , [AdminAuthController::class , 'adminLogin']);
@@ -35,6 +36,7 @@ Route::prefix('auth')->group(function (){
 
     // referee registration steps
     Route::post('/referee-register-step1' , [RefereeAuthController::class , 'refereeRegisterStep1']);
-    Route::post('/referee-register-step2' , [RefereeAuthController::class , 'refereeRegisterStep2']);
+    Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step2' , [RefereeAuthController::class , 'refereeRegisterStep2']);
+    Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step3' , [RefereeAuthController::class , 'refereeRegisterStep3']);
 
 });

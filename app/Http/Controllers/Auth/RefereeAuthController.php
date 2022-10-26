@@ -59,7 +59,7 @@ class RefereeAuthController extends Controller
 
     public function refereeRegisterStep2(Request $request){
 
-        $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'passport' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'visapage' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'emiratesIdFront' => 'required|image|mimes:jpg,png,jpeg|max:2048',
@@ -81,41 +81,38 @@ class RefereeAuthController extends Controller
         if($user->fullname == null || $user->email == null || $user->password == null){
             return response()->json([
                 'error' => 'incompleted previous step'
-            ]);
+            ] , 400);
+        }
+
+        if($user->ppcopy != null && $user->visapage != null && $user->emiratesIdFront != null && $user->emiratesIdBack != null){
+            return response()->json([
+                'error' => 'already uploaded images'
+            ] , 400);
         }
 
         // upload files
         if ($request->hasFile('passport')) {
-            $path = $this->UploadFile($request->file('passport'), 'Referee/Passport');
-            Files::create([
-                'path' => $path
-            ]);
-            $passport_path = $path;
+            $passport_path = $this->UploadFile($request->file('passport'), 'Referee/Passport');
         }
 
         if ($request->hasFile('visapage')) {
-            $path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
-            Files::create([
-                'path' => $path
-            ]);
-            $visapage_path = $path;
+            $$passport_path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
         }
 
         if ($request->hasFile('emiratesIdFront')) {
-            $path = $this->UploadFile($request->file('emiratesIdFront'), 'Referee/EmiratesIDFront');
-            Files::create([
-                'path' => $path
-            ]);
-            $emiratesIdFront = $path;
+            $emiratesIdFront = $this->UploadFile($request->file('emiratesIdFront'), 'Referee/EmiratesIDFront');
         }
 
         if ($request->hasFile('emiratesIdBack')) {
-            $path = $this->UploadFile($request->file('emiratesIdBack'), 'Referee/EmiratesIDBack');
-            Files::create([
-                'path' => $path
-            ]);
-            $emiratesIdBack = $path;
+            $emiratesIdBack = $this->UploadFile($request->file('emiratesIdBack'), 'Referee/EmiratesIDBack');
         }
+
+        $referee_object = Referee::where('email' , $user->email)->first();
+        $referee_object->ppcopy = $passport_path;
+        $referee_object->visapage = $visapage_path;
+        $referee_object->emiratesIdFront = $emiratesIdFront;
+        $referee_object->emiratesIdBack = $emiratesIdBack;
+        $referee_object->update();
 
         return response()->json([
             'message' => 'Files uploaded successfully',
@@ -126,5 +123,40 @@ class RefereeAuthController extends Controller
         ]);
 
     }
+
+
+    public function refereeRegisterStep3(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'accountNo' => 'required|string',
+            'accountName' => 'required|string',
+            'bank' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $user = $request->user();
+
+        // check previous step
+        if($user->ppcopy == null || $user->visapage == null || $user->emiratesIdFront == null || $user->emiratesIdBack == null){
+            return response()->json([
+                'error' => 'incompleted previous step'
+            ] , 400);
+        }
+
+        $user->bank = $request->bank;
+        $user->bankAccountNumber = $request->accountNo;
+        $user->bankAccountName = $request->accountName;
+        $user->update();
+
+        return response()->json([
+            'message' => 'Bank details added successfully!',
+            'referee' => $user
+        ] , 200);
+
+    }
+
 
 }
