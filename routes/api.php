@@ -40,4 +40,8 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step3' , [RefereeAuthController::class , 'refereeRegisterStep3']);
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-verify-otp' , [RefereeAuthController::class , 'refereeVerifyOTP']);
 
+
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/test' , [RefereeAuthController::class , 'resendOtp']);
+
+
 });

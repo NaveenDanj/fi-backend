@@ -59,7 +59,6 @@ class RefereeAuthController extends Controller
 
     }
 
-
     public function refereeRegisterStep2(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -126,7 +125,6 @@ class RefereeAuthController extends Controller
         ]);
 
     }
-
 
     public function refereeRegisterStep3(Request $request){
 
@@ -214,6 +212,10 @@ class RefereeAuthController extends Controller
             'expired' => 'expired'
         ] , 200);
 
+    }
+
+    public function resendOtp(Request $request){
+        return response()->json(['message' => 'hello']);
     }
 
 }
