@@ -7,7 +7,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Traits\Upload;
 use App\Models\Referee;
+use App\Models\RefereeOtp;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Carbon;
+use DateTime;
 use Auth;
 
 class RefereeAuthController extends Controller
@@ -151,12 +154,66 @@ class RefereeAuthController extends Controller
         $user->bankAccountName = $request->accountName;
         $user->update();
 
+        // genereate otp and send to user
+        $otp = mt_rand(1000 , 9999);
+        $timestamp = microtime(true) * 1000;
+
+
+        $expire_timestamp = $timestamp + 1000 * 60 * 5;
+        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+
+
+        $otp_obj = RefereeOtp::create([
+            'userId' => $user->id,
+            'otp' => $otp,
+            'expireTime' => $expire_date,
+            'blocked' => false
+        ]);
+
         return response()->json([
             'message' => 'Bank details added successfully!',
-            'referee' => $user
+            'referee' => $user,
         ] , 200);
 
     }
 
+    public function refereeVerifyOTP(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'otp' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // get the user otp
+        $user = $request->user();
+        $user_otp = RefereeOtp::where('userId' , $user->id)->first();
+
+        if($user_otp == null){
+            return response()->json(['error' => 'User otp not found!'], 400);
+        }
+
+        $now_date = new DateTime();
+        $expire_date = new DateTime($user_otp->expireTime);
+        $expired = false;
+
+        if($now_date > $expire_date){
+            $expired = true;
+        }
+
+        if($user_otp->otp != $request->otp){
+            return response()->json(['error' => 'Invalid otp!'], 400);
+        }
+
+        $user->phoneVerified = true;
+        $user->update();
+
+        return response()->json([
+            'expired' => 'expired'
+        ] , 200);
+
+    }
 
 }

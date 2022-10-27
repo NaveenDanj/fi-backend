@@ -38,5 +38,6 @@ Route::prefix('auth')->group(function (){
     Route::post('/referee-register-step1' , [RefereeAuthController::class , 'refereeRegisterStep1']);
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step2' , [RefereeAuthController::class , 'refereeRegisterStep2']);
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step3' , [RefereeAuthController::class , 'refereeRegisterStep3']);
+    Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-verify-otp' , [RefereeAuthController::class , 'refereeVerifyOTP']);
 
 });
