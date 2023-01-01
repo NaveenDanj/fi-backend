@@ -18,6 +18,7 @@ return new class extends Migration
             $table->bigInteger('userId');
             $table->bigInteger('walletId');
             $table->string('transactionType' , 15);
+            $table->decimal('amount' , 19,2);
             $table->timestamps();
         });
     }

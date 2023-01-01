@@ -15,7 +15,6 @@ class CustomerAuthController extends Controller
             'name' => 'required',
             'email' => 'required|string|email|unique:users',
             'password' =>  'required|min:6',
-            'deviceType' =>  'required'
         ]);
 
         if ($validator->fails()) {
@@ -56,9 +55,8 @@ class CustomerAuthController extends Controller
     public function customerLogin(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'email' => 'required|string|email|unique:users',
+            'email' => 'required|string|email',
             'password' =>  'required',
-            'deviceType' =>  'required'
         ]);
 
         if ($validator->fails()) {

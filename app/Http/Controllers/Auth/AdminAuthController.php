@@ -52,7 +52,7 @@ class AdminAuthController extends Controller
     public function adminLogin(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'email' => 'required|string|email|unique:users',
+            'email' => 'required|string|email',
             'password' =>  'required',
         ]);
 

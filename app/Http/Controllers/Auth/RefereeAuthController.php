@@ -193,13 +193,14 @@ class RefereeAuthController extends Controller
             return response()->json(['error' => 'User otp not found!'], 400);
         }
 
-        $now_date = new DateTime();
-        $expire_date = new DateTime($user_otp->expireTime);
-        $expired = false;
+        // $now_date = new DateTime();
+        // $expire_date = new DateTime($user_otp->expireTime);
+        // $expired = false;
 
-        if($now_date > $expire_date){
-            $expired = true;
+        if(checkOTPExpired($expire_date)){
+            return response()->json(['error' => 'OTP expired!'], 400);
         }
+
 
         if($user_otp->otp != $request->otp){
             return response()->json(['error' => 'Invalid otp!'], 400);
@@ -209,13 +210,35 @@ class RefereeAuthController extends Controller
         $user->update();
 
         return response()->json([
-            'expired' => 'expired'
+            'message' => 'OTP verified successfully!'
         ] , 200);
 
     }
 
     public function resendOtp(Request $request){
-        return response()->json(['message' => 'hello']);
+
+        // check user has previous otp's generated
+
+        // delete previous Otp
+
+        // generate new otp
+
+        // send
+
+
+    }
+
+    private function checkOTPExpired($expire_time){
+
+        $now_date = new DateTime();
+        $expire_date = new DateTime($expire_time);
+        $expired = false;
+
+        if($now_date > $expire_date){
+            $expired = true;
+        }
+
+        return $expired;
     }
 
 }
