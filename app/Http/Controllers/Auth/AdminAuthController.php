@@ -17,7 +17,6 @@ class AdminAuthController extends Controller
             'name' => 'required',
             'email' => 'required|string|email|unique:admins',
             'password' =>  'required|min:6',
-            'deviceType' =>  'required'
         ]);
 
         if ($validator->fails()) {

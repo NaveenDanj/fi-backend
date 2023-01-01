@@ -225,6 +225,9 @@ class RefereeAuthController extends Controller
 
         // send
 
+        return response()->json([
+            'message' => 'OTP sent'
+        ] , 200);
 
     }
 

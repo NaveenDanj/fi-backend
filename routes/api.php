@@ -41,7 +41,14 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-verify-otp' , [RefereeAuthController::class , 'refereeVerifyOTP']);
 
 
-    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/test' , [RefereeAuthController::class , 'resendOtp']);
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
+
+
+    // customer submission routes
+
+    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1'   )
+    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1'   )
+    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1'   )
 
 
 });
