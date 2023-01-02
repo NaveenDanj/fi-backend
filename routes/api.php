@@ -28,7 +28,7 @@ Route::prefix('auth')->group(function (){
     // customer
     Route::post('/customer-register' , [CustomerAuthController::class , 'customerRegister']);
     Route::post('/customer-login' , [CustomerAuthController::class , 'customerLogin']);
-    Route::middleware(['auth:sanctum' , 'abilities:web'])->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
+    Route::middleware(['auth:sanctum' , 'abilities:user'])->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
 
     // admin
     Route::post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
@@ -44,9 +44,9 @@ Route::prefix('auth')->group(function (){
 
 
     // customer submission routes
-    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1' , [CustomerSubmissionController::class , 'customerSubmission1'] );
-    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
-    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
+    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1' , [CustomerSubmissionController::class , 'customerSubmission1'] );
+    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
+    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
     // Route::middleware([auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-4' , [CustomerSubmissionController::class , 'customerSubmission4'] );
 
 });

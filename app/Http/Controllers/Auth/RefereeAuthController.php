@@ -157,7 +157,7 @@ class RefereeAuthController extends Controller
         $timestamp = microtime(true) * 1000;
 
 
-        $expire_timestamp = $timestamp + 1000 * 60 * 5;
+        $expire_timestamp = $timestamp + 1000 * 60 * 1;
         $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
 
 
@@ -209,6 +209,8 @@ class RefereeAuthController extends Controller
         $user->phoneVerified = true;
         $user->update();
 
+        RefereeOtp::where('userId' , $user->id)->delete();
+
         return response()->json([
             'message' => 'OTP verified successfully!'
         ] , 200);
@@ -218,10 +220,34 @@ class RefereeAuthController extends Controller
     public function resendOtp(Request $request){
 
         // check user has previous otp's generated
+        $otp_check = RefereeOtp::where('userId' , $user->id);
+
+        if($otp_check){
+            if( !checkOTPExpired($otp_check->expireTime) ){
+                return response()->json([
+                    'message' => 'Previous otp is not expired yet!'
+                ] , 400);
+            }
+        }
 
         // delete previous Otp
+        RefereeOtp::where('userId' , $user->id)->delete();
 
         // generate new otp
+        $otp = mt_rand(1000 , 9999);
+        $timestamp = microtime(true) * 1000;
+
+
+        $expire_timestamp = $timestamp + 1000 * 60 * 1;
+        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+
+
+        $otp_obj = RefereeOtp::create([
+            'userId' => $user->id,
+            'otp' => $otp,
+            'expireTime' => $expire_date,
+            'blocked' => false
+        ]);
 
         // send
 
