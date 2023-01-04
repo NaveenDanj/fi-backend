@@ -43,14 +43,16 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
 
     Route::post('/referee-login' , [RefereeAuthController::class , 'refereeLogin']);
-
-    // customer submission routes
-    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
-    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
-    // Route::middleware([auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-4' , [CustomerSubmissionController::class , 'customerSubmission4'] );
-
 });
 
 Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission' , [CustomerSubmissionController::class , 'customerSubmission1'] );
+});
+
+Route::prefix('introducer')->group(function (){
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
+});
+
+Route::prefix('meta')->group(function (){
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/load-meta-data' , [IntroducerController::class , 'addIntroducer'] );
 });

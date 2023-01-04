@@ -11,5 +11,5 @@ class Introducer extends Model
 
     protected $fillable = [
         'name'
-    ]
+    ];
 }
