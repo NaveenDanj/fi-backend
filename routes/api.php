@@ -42,11 +42,15 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-verify-otp' , [RefereeAuthController::class , 'refereeVerifyOTP']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
 
+    Route::post('referee-login' , [RefereeAuthController::class , 'refereeLogin'])
 
     // customer submission routes
-    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1' , [CustomerSubmissionController::class , 'customerSubmission1'] );
     // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
     // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
     // Route::middleware([auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-4' , [CustomerSubmissionController::class , 'customerSubmission4'] );
 
+});
+
+Route::prefix('submission')->group(function (){
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission' , [CustomerSubmissionController::class , 'customerSubmission1'] );
 });

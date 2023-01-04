@@ -13,7 +13,7 @@ class CustomerSubmissionController extends Controller
 
     public function customerSubmission1(){
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'firstName' => 'required|string|max:100',
+            'name' => 'required|string|max:100',
             'company' =>  'string|max:20',
             'contact' =>  'required|string|unique:customer_submissions',
             'email' =>  'string|email|unique:customer_submissions',
@@ -28,11 +28,13 @@ class CustomerSubmissionController extends Controller
 
         // save the step 1 details
         $submission = CustomerSubmission::create([
-            'firstName' => $request->firstName,
-            'lastName' => $request->lastName,
+            'name' => $request->name,
+            'company' => $request->company,
             'contact' => $request->contact,
             'email' => $request->email,
             'salary' => $request->salary,
+            'lat' => $request->lat,
+            'long' => $request->lat,
             'refereeId' => $request->user()->id,
             'status' => 'incompleted'
         ]);
@@ -40,7 +42,7 @@ class CustomerSubmissionController extends Controller
         // returned the saved user object
 
         return response()->json([
-            'message' => 'Step 1 completed!',
+            'message' => 'Submission added successfully!',
             'submission' => $submission
         ]);
 

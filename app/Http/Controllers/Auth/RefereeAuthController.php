@@ -257,6 +257,41 @@ class RefereeAuthController extends Controller
 
     }
 
+
+    public function refereeLogin(Request $request){
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'email' =>  'required|string|email',
+            'password' => 'required'
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+
+        if(Auth::guard('referee')->attempt(['email' => $request->email, 'password' => $request->password])){
+
+            $referee = Auth::guard('referee')->user();
+
+            $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
+            // return the token
+            return response()->json([
+                'token' => $token,
+                'referee' => $referee
+            ] , 200);
+
+        }else{
+            return response()->json([
+                'message' => 'Email or password is incorrect'
+            ] , 401);
+        }
+
+
+
+    }
+
+
     private function checkOTPExpired($expire_time){
 
         $now_date = new DateTime();
@@ -269,5 +304,6 @@ class RefereeAuthController extends Controller
 
         return $expired;
     }
+
 
 }
