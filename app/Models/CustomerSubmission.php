@@ -10,19 +10,13 @@ class CustomerSubmission extends Model
     use HasFactory;
 
     protected $fillable = [
-        'firstName',
-        'lastName',
+        'name',
+        'company',
         'contact',
         'email',
         'salary',
-
-        'passportPath',
-        'visaPath',
-
-        'idFrontPath',
-        'idBackPath',
-
-        'salarySlipPath',
+        'lat',
+        'long',
 
         'refereeId',
         'status'

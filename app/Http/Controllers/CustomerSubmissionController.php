@@ -11,13 +11,13 @@ class CustomerSubmissionController extends Controller
 
     use Upload;
 
-    public function customerSubmission1(){
+    public function customerSubmission1(Request $request){
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'name' => 'required|string|max:100',
             'company' =>  'string|max:20',
             'contact' =>  'required|string|unique:customer_submissions',
             'email' =>  'string|email|unique:customer_submissions',
-            'salary' =>  'required|number',
+            'salary' =>  'required|numeric',
             'lat' => 'string',
             'long' => 'string',
         ]);
