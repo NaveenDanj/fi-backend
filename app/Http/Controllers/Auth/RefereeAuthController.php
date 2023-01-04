@@ -24,7 +24,7 @@ class RefereeAuthController extends Controller
             'contact' =>  'required|string|unique:referees',
             'email' =>  'required|string|email|unique:referees',
             'password' => 'required|min:6',
-            'introducer' => 'numeric|required'
+            'introducerId' => 'numeric|required'
         ]);
 
 
@@ -37,6 +37,7 @@ class RefereeAuthController extends Controller
             'fullname' => $request->name,
             'contact' => $request->contact,
             'email' => $request->email,
+            'introducerId' => $request->introducerId,
             'password' => Hash::make($request->password),
         ]);
 
