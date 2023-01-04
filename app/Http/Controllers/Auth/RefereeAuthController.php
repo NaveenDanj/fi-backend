@@ -23,7 +23,8 @@ class RefereeAuthController extends Controller
             'name' => 'required|string',
             'contact' =>  'required|string|unique:referees',
             'email' =>  'required|string|email|unique:referees',
-            'password' => 'required|min:6'
+            'password' => 'required|min:6',
+            'introducer' => 'numeric|required'
         ]);
 
 
@@ -62,10 +63,9 @@ class RefereeAuthController extends Controller
     public function refereeRegisterStep2(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'passport' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'visapage' => 'required|image|mimes:jpg,png,jpeg|max:2048',
-            'emiratesIdFront' => 'required|image|mimes:jpg,png,jpeg|max:2048',
-            'emiratesIdBack' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'image1' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'image2' => 'required|image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -75,10 +75,9 @@ class RefereeAuthController extends Controller
         // check if previous steps are completed
         $user = $request->user();
 
-        $passport_path = null;
         $visapage_path = null;
-        $emiratesIdFront = null;
-        $emiratesIdBack = null;
+        $image1_path = null;
+        $image2_path = null;
 
         if($user->fullname == null || $user->email == null || $user->password == null){
             return response()->json([
@@ -86,42 +85,38 @@ class RefereeAuthController extends Controller
             ] , 400);
         }
 
-        if($user->ppcopy != null && $user->visapage != null && $user->emiratesIdFront != null && $user->emiratesIdBack != null){
+        if($user->ppcopy != null && $user->visapage != null && $user->verification_image_1 != null && $user->verification_image_2 != null){
             return response()->json([
                 'error' => 'already uploaded images'
             ] , 400);
         }
 
         // upload files
-        if ($request->hasFile('passport')) {
-            $passport_path = $this->UploadFile($request->file('passport'), 'Referee/Passport');
-        }
 
         if ($request->hasFile('visapage')) {
-            $$passport_path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
+            $visapage_path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
         }
 
-        if ($request->hasFile('emiratesIdFront')) {
-            $emiratesIdFront = $this->UploadFile($request->file('emiratesIdFront'), 'Referee/EmiratesIDFront');
+        if ($request->hasFile('image1')) {
+            $image1_path = $this->UploadFile($request->file('image1'), 'Referee/verification1');
         }
 
-        if ($request->hasFile('emiratesIdBack')) {
-            $emiratesIdBack = $this->UploadFile($request->file('emiratesIdBack'), 'Referee/EmiratesIDBack');
+        if ($request->hasFile('image2')) {
+            $image2_path = $this->UploadFile($request->file('image2'), 'Referee/verification1');
         }
+
 
         $referee_object = Referee::where('email' , $user->email)->first();
-        $referee_object->ppcopy = $passport_path;
         $referee_object->visapage = $visapage_path;
-        $referee_object->emiratesIdFront = $emiratesIdFront;
-        $referee_object->emiratesIdBack = $emiratesIdBack;
+        $referee_object->verification_image_1 = $image1_path;
+        $referee_object->verification_image_2 = $image2_path;
         $referee_object->update();
 
         return response()->json([
             'message' => 'Files uploaded successfully',
-            'passport' => $passport_path,
             'visapage' => $visapage_path,
-            'emiratesIdFront' => $emiratesIdFront,
-            'emiratesIdBack' => $emiratesIdBack
+            'verification_image_1' => $image1_path,
+            'verification_image_2' => $image2_path
         ]);
 
     }
@@ -141,7 +136,7 @@ class RefereeAuthController extends Controller
         $user = $request->user();
 
         // check previous step
-        if($user->ppcopy == null || $user->visapage == null || $user->emiratesIdFront == null || $user->emiratesIdBack == null){
+        if($user->visapage == null || $user->verification_image_1 == null || $user->verification_image_2 == null){
             return response()->json([
                 'error' => 'incompleted previous step'
             ] , 400);
@@ -175,6 +170,19 @@ class RefereeAuthController extends Controller
 
     }
 
+    public function checkOTPExpired($expire_time){
+
+        $now_date = new DateTime();
+        $expire_date = new DateTime($expire_time);
+        $expired = false;
+
+        if($now_date > $expire_date){
+            $expired = true;
+        }
+
+        return $expired;
+    }
+
     public function refereeVerifyOTP(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -197,7 +205,7 @@ class RefereeAuthController extends Controller
         // $expire_date = new DateTime($user_otp->expireTime);
         // $expired = false;
 
-        if(checkOTPExpired($expire_date)){
+        if($this->checkOTPExpired($user_otp->expireTime)){
             return response()->json(['error' => 'OTP expired!'], 400);
         }
 
@@ -220,10 +228,10 @@ class RefereeAuthController extends Controller
     public function resendOtp(Request $request){
 
         // check user has previous otp's generated
-        $otp_check = RefereeOtp::where('userId' , $user->id);
+        $otp_check = RefereeOtp::where('userId' , $request->user()->id)->first();
 
         if($otp_check){
-            if( !checkOTPExpired($otp_check->expireTime) ){
+            if( !$this->checkOTPExpired($otp_check->expireTime) ){
                 return response()->json([
                     'message' => 'Previous otp is not expired yet!'
                 ] , 400);
@@ -231,7 +239,7 @@ class RefereeAuthController extends Controller
         }
 
         // delete previous Otp
-        RefereeOtp::where('userId' , $user->id)->delete();
+        RefereeOtp::where('userId' , $request->user()->id)->delete();
 
         // generate new otp
         $otp = mt_rand(1000 , 9999);
@@ -243,7 +251,7 @@ class RefereeAuthController extends Controller
 
 
         $otp_obj = RefereeOtp::create([
-            'userId' => $user->id,
+            'userId' => $request->user()->id,
             'otp' => $otp,
             'expireTime' => $expire_date,
             'blocked' => false
@@ -292,18 +300,7 @@ class RefereeAuthController extends Controller
     }
 
 
-    private function checkOTPExpired($expire_time){
 
-        $now_date = new DateTime();
-        $expire_date = new DateTime($expire_time);
-        $expired = false;
-
-        if($now_date > $expire_date){
-            $expired = true;
-        }
-
-        return $expired;
-    }
 
 
 }
