@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\CustomerAuthController;
 use App\Http\Controllers\Auth\AdminAuthController;
 use App\Http\Controllers\Auth\RefereeAuthController;
 use App\Http\Controllers\CustomerSubmissionController;
+use App\Http\Controllers\IntroducerController;
+use App\Http\Controllers\MetaDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,5 +56,5 @@ Route::prefix('introducer')->group(function (){
 });
 
 Route::prefix('meta')->group(function (){
-    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/load-meta-data' , [IntroducerController::class , 'addIntroducer'] );
+    Route::get('/load-meta-data' , [MetaDataController::class , 'loadMetaData'] );
 });
