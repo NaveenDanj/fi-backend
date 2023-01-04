@@ -45,8 +45,8 @@ Route::prefix('auth')->group(function (){
 
     // customer submission routes
     Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-1' , [CustomerSubmissionController::class , 'customerSubmission1'] );
-    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
-    Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
+    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-2' , [CustomerSubmissionController::class , 'customerSubmission2'] );
+    // Route::middleware(['auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-3' , [CustomerSubmissionController::class , 'customerSubmission3'] );
     // Route::middleware([auth.sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission-4' , [CustomerSubmissionController::class , 'customerSubmission4'] );
 
 });
