@@ -85,4 +85,18 @@ class AdminAuthController extends Controller
         return $admin_user;
     }
 
+    public function deleteIntroducer(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'email' => 'required|string|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // delete introducer user
+
+    }
+
 }

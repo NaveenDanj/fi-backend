@@ -33,7 +33,7 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:user'])->get('/customer-me' , [CustomerAuthController::class , 'currentUser']);
 
     // admin
-    Route::post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
+    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
     Route::post('/admin-login' , [AdminAuthController::class , 'adminLogin']);
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/admin-me' , [AdminAuthController::class , 'currentAdminUser']);
 
