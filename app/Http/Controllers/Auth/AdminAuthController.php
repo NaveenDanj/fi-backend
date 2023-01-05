@@ -96,6 +96,21 @@ class AdminAuthController extends Controller
         }
 
         // delete introducer user
+        $introducer = Admin::where('email' , $request->email)->where('role' , 'introducer')->first();
+
+        if(!$introducer){
+            return response()->json([
+                'message' => 'Introducer account not found'
+            ] , 404);
+        }
+
+        // soft delete the admin account
+        $introducer->delete();
+
+        return response()->json([
+            'message' => 'Introducer account deleted successfully',
+            'deleted_account' => $introducer
+        ]);
 
     }
 

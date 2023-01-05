@@ -54,6 +54,7 @@ Route::prefix('submission')->group(function (){
 
 Route::prefix('introducer')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->delete('/delete-introducer' , [AdminAuthController::class , 'deleteIntroducer'] );
 });
 
 Route::prefix('meta')->group(function (){
