@@ -20,6 +20,8 @@ class CustomerSubmissionController extends Controller
             'salary' =>  'required|numeric',
             'lat' => 'string',
             'long' => 'string',
+            'consent_of_lead' => 'boolean|required',
+            'contacted_by_FCB' => 'boolean|required'
         ]);
 
         if ($validator->fails()) {
@@ -36,7 +38,9 @@ class CustomerSubmissionController extends Controller
             'lat' => $request->lat,
             'long' => $request->lat,
             'refereeId' => $request->user()->id,
-            'status' => 'incompleted'
+            'status' => 'incompleted',
+            'consent_of_lead' => $request->consent_of_lead,
+            'contacted_by_FCB' => $request->contacted_by_FCB
         ]);
 
         // returned the saved user object
