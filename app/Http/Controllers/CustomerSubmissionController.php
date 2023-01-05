@@ -63,6 +63,16 @@ class CustomerSubmissionController extends Controller
 
     }
 
+    public function getAllSubmissions(Request $request){
+
+        $my_submissions = CustomerSubmission::paginate(15);
+
+        return response()->json([
+            'submissions' => $my_submissions
+        ]);
+
+    }
+
 
     private function checkSubmission($id){
 
