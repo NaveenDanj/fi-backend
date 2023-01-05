@@ -45,6 +45,7 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
 
     Route::post('/referee-login' , [RefereeAuthController::class , 'refereeLogin']);
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-me' , [RefereeAuthController::class , 'refereeMe']);
 });
 
 Route::prefix('submission')->group(function (){

@@ -19,7 +19,10 @@ class CustomerSubmission extends Model
         'long',
 
         'refereeId',
-        'status'
+        'status',
+
+        'consent_of_lead',
+        'contacted_by_FCB'
 
 
     ];

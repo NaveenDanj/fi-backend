@@ -33,7 +33,7 @@ class RefereeAuthController extends Controller
         }
 
         // save user to database
-        $admin_user = Referee::create([
+        $referee_user = Referee::create([
             'fullname' => $request->name,
             'contact' => $request->contact,
             'email' => $request->email,
@@ -300,8 +300,11 @@ class RefereeAuthController extends Controller
 
     }
 
-
-
-
+    public function refereeMe(Request $request){
+        $user = $request->user();
+        return response()->json([
+            'referee' => $user
+        ]);
+    }
 
 }
