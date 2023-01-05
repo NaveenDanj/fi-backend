@@ -53,7 +53,7 @@ Route::prefix('submission')->group(function (){
 });
 
 Route::prefix('introducer')->group(function (){
-    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
 });
 
 Route::prefix('meta')->group(function (){

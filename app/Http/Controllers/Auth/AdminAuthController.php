@@ -17,6 +17,7 @@ class AdminAuthController extends Controller
             'name' => 'required',
             'email' => 'required|string|email|unique:admins',
             'password' =>  'required|min:6',
+            'role' => 'required|in:admin,introducer'
         ]);
 
         if ($validator->fails()) {
@@ -27,6 +28,7 @@ class AdminAuthController extends Controller
             'fullname' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $request->role,
         ]);
 
         if(Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])){

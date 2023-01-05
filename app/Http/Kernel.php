@@ -68,5 +68,6 @@ class Kernel extends HttpKernel
         'ability' => \Laravel\Sanctum\Http\Middleware\CheckForAnyAbility::class,
         'optimizeImages' => \Spatie\LaravelImageOptimizer\Middlewares\OptimizeImages::class,
         'refereeVerified' => \App\Http\Middleware\RefereeVerified::class,
+        'roleAdminRequired' => \App\Http\Middleware\roleAdminRequired::class,
     ];
 }
