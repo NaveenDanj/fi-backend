@@ -85,16 +85,7 @@ class CustomerSubmissionController extends Controller
             ] , 403);
         }
 
-        $referees_belongs_to_introducer = Referee::where('introducerId' , $introducer_user->id)->get();
-
-
-        $referees = [];
-
-        foreach ($referees_belongs_to_introducer as $referee){
-            $referees[] = $referee->id;
-        }
-
-        $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
+        $submissions = $this->getSubmissionsBelongsToIntroducer($introducer_user->id);
 
         return response()->json([
             'submissions' => $submissions
@@ -120,13 +111,50 @@ class CustomerSubmissionController extends Controller
             return response()->json(['message' => 'Submission not found'], 404);
         }
 
-        $submission->status = $request->status;
-        $submission->update();
+        if($submission->status == 'Activated'){
+            return response()->json(['message' => 'Status is activated'], 400);
 
-        return response()->json([
-            'message' => 'submission status updated successfully',
-            'submission' => $submission
-        ]);
+        }
+
+        // check if admin is whether a admin or introducer
+        $introducer_user = $request->user();
+
+        if($introducer_user->role == 'admin'){
+
+            $submission->status = $request->status;
+            $submission->update();
+
+            return response()->json([
+                'message' => 'submission status updated successfully',
+                'submission' => $submission
+            ]);
+
+        }else{
+
+            $belongs_to = $this->getSubmissionIntroducer($submission->id);
+
+            if($belongs_to->id != $introducer_user->id){
+
+                return response()->json([
+                    'message' => 'Unauthorized!',
+                ] , 403);
+
+            }else{
+
+                $submission->status = $request->status;
+                $submission->update();
+
+                return response()->json([
+                    'message' => 'submission status updated successfully',
+                    'submission' => $submission
+                ]);
+
+            }
+
+        }
+
+
+
 
     }
 
@@ -138,6 +166,26 @@ class CustomerSubmissionController extends Controller
             return false;
         }
 
+    }
+
+    private function getSubmissionsBelongsToIntroducer($id){
+
+        $referees_belongs_to_introducer = Referee::where('introducerId' , $id)->get();
+        $referees = [];
+
+        foreach ($referees_belongs_to_introducer as $referee){
+            $referees[] = $referee->id;
+        }
+
+        $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
+        return $submissions;
+    }
+
+    private function getSubmissionIntroducer($id){
+        $submissions = CustomerSubmission::whereIn('id' , $id)->first();
+        $referee = Referee::where('id' , $submissions->refereeId)->first();
+        $introducer_user = Admin::where('id' , $referee->introducerId )->first();
+        return $introducer_user;
     }
 
 
@@ -153,6 +201,17 @@ class CustomerSubmissionController extends Controller
         }
 
         return true;
+
+    }
+
+    private function handleRefereeCommision($submission , $referee){
+
+        // get the commision rate from the database
+
+        // add the commission to the referee wallet
+
+        // update the wallet transaction table
+
 
     }
 
