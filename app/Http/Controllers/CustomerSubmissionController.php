@@ -5,6 +5,9 @@ use App\Traits\Upload;
 use Illuminate\Http\Request;
 use App\Models\CustomerSubmission;
 use App\Models\Referee;
+use App\Models\CommisionRate;
+use App\Models\RefereeWallet;
+use App\Models\WalletTransaction;
 
 
 class CustomerSubmissionController extends Controller
@@ -124,6 +127,8 @@ class CustomerSubmissionController extends Controller
             $submission->status = $request->status;
             $submission->update();
 
+            $this->handleRefereeCommision($submission);
+
             return response()->json([
                 'message' => 'submission status updated successfully',
                 'submission' => $submission
@@ -131,7 +136,7 @@ class CustomerSubmissionController extends Controller
 
         }else{
 
-            $belongs_to = $this->getSubmissionIntroducer($submission->id);
+            $belongs_to = $this->getSubmissionIntroducer($submission);
 
             if($belongs_to->id != $introducer_user->id){
 
@@ -141,8 +146,11 @@ class CustomerSubmissionController extends Controller
 
             }else{
 
+
                 $submission->status = $request->status;
                 $submission->update();
+
+                $this->handleRefereeCommision($submission);
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
@@ -204,14 +212,33 @@ class CustomerSubmissionController extends Controller
 
     }
 
-    private function handleRefereeCommision($submission , $referee){
+    private function handleRefereeCommision($submission){
 
         // get the commision rate from the database
+        $rate = CommisionRate::first();
+
+        // check if status is activated
+        if($submission->status != 'Activated'){
+            return 0;
+        }
 
         // add the commission to the referee wallet
+        $referee_wallet = RefereeWallet::where('userId' , $submission->refereeId)->first();
+
+
+
+        $referee_wallet->balance = $referee_wallet->balance + $rate->rate;
+        $referee_wallet->update();
 
         // update the wallet transaction table
+        WalletTransaction::create([
+            'userId' => $submission->refereeId,
+            'walletId' => $referee_wallet->id,
+            'amount' => $rate->rate,
+            'transactionType' => 'Commision'
+        ]);
 
+        return 0;
 
     }
 

@@ -11,6 +11,7 @@ use App\Models\RefereeOtp;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
+use App\Models\RefereeWallet;
 use DateTime;
 use Auth;
 
@@ -236,6 +237,12 @@ class RefereeAuthController extends Controller
         $user->update();
 
         RefereeOtp::where('userId' , $user->id)->delete();
+
+        // add referee wallet
+        RefereeWallet::create([
+            'userId' => $user->id,
+            'balance' => 0,
+        ]);
 
         return response()->json([
             'message' => 'OTP verified successfully!'

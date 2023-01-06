@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('commision_rates', function (Blueprint $table) {
             $table->id();
-            $table->decimal('rate' , 19 , 2)->default('1000');
+            $table->decimal('rate' , 19 , 2)->default('500');
             $table->timestamps();
         });
     }
