@@ -87,8 +87,17 @@ class CustomerSubmissionController extends Controller
 
         $referees_belongs_to_introducer = Referee::where('introducerId' , $introducer_user->id)->get();
 
+
+        $referees = [];
+
+        foreach ($referees_belongs_to_introducer as $referee){
+            $referees[] = $referee->id;
+        }
+
+        $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
+
         return response()->json([
-            'referees_belongs_to_introducer' => $referees_belongs_to_introducer
+            'submissions' => $submissions
         ]);
 
     }
