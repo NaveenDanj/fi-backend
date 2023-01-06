@@ -38,7 +38,7 @@ class CustomerSubmissionController extends Controller
             'lat' => $request->lat,
             'long' => $request->lat,
             'refereeId' => $request->user()->id,
-            'status' => 'incompleted',
+            'status' => 'Submitted',
             'consent_of_lead' => $request->consent_of_lead,
             'contacted_by_FCB' => $request->contacted_by_FCB
         ]);
@@ -73,6 +73,38 @@ class CustomerSubmissionController extends Controller
 
     }
 
+    public function getSubmissionForIntroducer(Request $request){
+
+    }
+
+
+    public function updateSubmissionState(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'submission_id' => 'required|numeric',
+            'status' => 'required|in:Submitted,Contacted,AECB_Checked,Pending,Approved,Delivered,Activated'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $submission = CustomerSubmission::where('id' , $request->submission_id)->first();
+
+        if(!$submission){
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        $submission->status = $request->status;
+        $submission->update();
+
+        return response()->json([
+            'message' => 'submission status updated successfully',
+            'submission' => $submission
+        ]);
+
+    }
+
 
     private function checkSubmission($id){
 
@@ -82,6 +114,7 @@ class CustomerSubmissionController extends Controller
         }
 
     }
+
 
     private function checkSubmissionRefereeAccess($id , $userId){
         $submission_exists = CustomerSubmission::where('id' , $id)->first();
