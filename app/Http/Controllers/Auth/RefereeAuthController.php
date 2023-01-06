@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Traits\Upload;
 use App\Models\Referee;
 use App\Models\RefereeOtp;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
 use DateTime;
@@ -30,6 +31,22 @@ class RefereeAuthController extends Controller
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // check if introducer is exists
+        $introducer = Admin::where('id' ,  $request->introducerId)->first();
+
+        if(!$introducer){
+            return response()->json([
+                'message' => 'Introducer not found!'
+            ] , 401);
+        }
+
+
+        if($introducer->role != 'introducer'){
+            return response()->json([
+                'message' => 'Requested user is not an introducer!'
+            ] , 401);
         }
 
         // save user to database

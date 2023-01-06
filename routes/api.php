@@ -24,10 +24,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/csrf-token' , function(){
-    return response()->json(['csrf-token' => csrf_token()]);
-});
-
 
 Route::prefix('auth')->group(function (){
 
@@ -57,6 +53,7 @@ Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/view-my-submissions' , [CustomerSubmissionController::class , 'getMySubmissions'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->get('/view-all-submissions' , [CustomerSubmissionController::class , 'getAllSubmissions'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/update-submission-status' , [CustomerSubmissionController::class , 'updateSubmissionState'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/view-introducer-submissions' , [CustomerSubmissionController::class , 'getSubmissionForIntroducer'] );
 });
 
 Route::prefix('introducer')->group(function (){

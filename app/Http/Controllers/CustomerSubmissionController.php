@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Traits\Upload;
 use Illuminate\Http\Request;
 use App\Models\CustomerSubmission;
+use App\Models\Referee;
 
 
 class CustomerSubmissionController extends Controller
@@ -74,6 +75,21 @@ class CustomerSubmissionController extends Controller
     }
 
     public function getSubmissionForIntroducer(Request $request){
+
+
+        $introducer_user = $request->user();
+
+        if($introducer_user->role != 'introducer'){
+            return response()->json([
+                'message' => 'Invalid user role'
+            ] , 403);
+        }
+
+        $referees_belongs_to_introducer = Referee::where('introducerId' , $introducer_user->id)->get();
+
+        return response()->json([
+            'referees_belongs_to_introducer' => $referees_belongs_to_introducer
+        ]);
 
     }
 
