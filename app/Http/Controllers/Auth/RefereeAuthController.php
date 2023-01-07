@@ -310,10 +310,11 @@ class RefereeAuthController extends Controller
             // $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
             // // return the token
 
-            $this->generateOTP($referee);
+            $checksum = $this->generateOTP($referee);
 
             return response()->json([
-                'message' => 'Logged in successfully!'
+                'message' => 'Logged in successfully!',
+                'checksum' => $checksum
             ] , 200);
 
         }else{
@@ -328,7 +329,8 @@ class RefereeAuthController extends Controller
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'otp' =>  'required|numeric',
-            'email' => 'required|string|email'
+            'email' => 'required|string|email',
+            'checksum' => 'required|string'
         ]);
 
 
@@ -346,14 +348,13 @@ class RefereeAuthController extends Controller
         }
 
         // check user has otp request
-        $check_login_attempt = RefereeOtp::where('userId' , $referee->id)->first();
+        $check_login_attempt = RefereeOtp::where('userId' , $referee->id)->where('checksum' , $request->checksum)->first();
 
         if(!$check_login_attempt){
             return response()->json([
                 'message' => 'no otp found!'
             ] , 404);
         }
-
 
         if($this->checkOTPExpired($check_login_attempt->expireTime)){
             return response()->json(['error' => 'OTP expired!'], 400);
@@ -364,7 +365,6 @@ class RefereeAuthController extends Controller
             return response()->json(['error' => 'Invalid otp!'], 400);
         }
 
-        // generate token and send
         $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
 
         RefereeOtp::where('userId' , $referee->id)->delete();
@@ -385,15 +385,18 @@ class RefereeAuthController extends Controller
         $expire_timestamp = $timestamp + 1000 * 60 * 1;
         $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
 
+        $checksum = Str::uuid()->toString();
 
-        $otp_obj = RefereeOtp::create([
+        RefereeOtp::create([
             'userId' => $user->id,
             'otp' => $otp,
             'expireTime' => $expire_date,
-            'blocked' => false
+            'blocked' => false,
+            'checksum' => $checksum
         ]);
 
-        return 0;
+
+        return $checksum;
     }
 
     public function refereeMe(Request $request){
