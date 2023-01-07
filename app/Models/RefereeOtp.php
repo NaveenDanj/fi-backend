@@ -13,7 +13,8 @@ class RefereeOtp extends Model
         'userId',
         'otp',
         'expireTime',
-        'blocked'
+        'blocked',
+        'checksum'
     ];
 
 }

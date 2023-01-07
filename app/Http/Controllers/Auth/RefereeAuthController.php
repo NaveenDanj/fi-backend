@@ -307,11 +307,13 @@ class RefereeAuthController extends Controller
 
             $referee = Auth::guard('referee')->user();
 
-            $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
-            // return the token
+            // $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
+            // // return the token
+
+            $this->generateOTP($referee);
+
             return response()->json([
-                'token' => $token,
-                'referee' => $referee
+                'message' => 'Logged in successfully!'
             ] , 200);
 
         }else{
@@ -320,8 +322,78 @@ class RefereeAuthController extends Controller
             ] , 401);
         }
 
+    }
+
+    public function verifyOTPLogin(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'otp' =>  'required|numeric',
+            'email' => 'required|string|email'
+        ]);
 
 
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // check the user
+        $referee = Referee::where('email' , $request->email)->first();
+
+        if(!$referee){
+            return response()->json([
+                'message' => 'User not found!'
+            ] , 404);
+        }
+
+        // check user has otp request
+        $check_login_attempt = RefereeOtp::where('userId' , $referee->id)->first();
+
+        if(!$check_login_attempt){
+            return response()->json([
+                'message' => 'no otp found!'
+            ] , 404);
+        }
+
+
+        if($this->checkOTPExpired($check_login_attempt->expireTime)){
+            return response()->json(['error' => 'OTP expired!'], 400);
+        }
+
+
+        if($check_login_attempt->otp != $request->otp){
+            return response()->json(['error' => 'Invalid otp!'], 400);
+        }
+
+        // generate token and send
+        $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
+
+        RefereeOtp::where('userId' , $referee->id)->delete();
+
+        return response()->json([
+            'message' => 'user logged in successfully!',
+            'token' => $token
+        ]);
+
+    }
+
+    private function generateOTP($user){
+        // genereate otp and send to user
+        $otp = mt_rand(1000 , 9999);
+        $timestamp = microtime(true) * 1000;
+
+
+        $expire_timestamp = $timestamp + 1000 * 60 * 1;
+        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+
+
+        $otp_obj = RefereeOtp::create([
+            'userId' => $user->id,
+            'otp' => $otp,
+            'expireTime' => $expire_date,
+            'blocked' => false
+        ]);
+
+        return 0;
     }
 
     public function refereeMe(Request $request){
