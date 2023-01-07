@@ -16,14 +16,13 @@ class Referee extends Authenticatable
         'contact',
         'email',
         'password',
-        'ppcopy',
-        'visapage',
-        'emiratesIdFront',
-        'emiratesIdBack',
         'bank',
         'bankAccountNumber',
         'bankAccountName',
-        'phoneVerified'
+        'phoneVerified',
+        'verification_image_1',
+        'verification_image_2',
+        'introducerId'
     ];
 
     protected $hidden = [

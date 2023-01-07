@@ -82,7 +82,6 @@ class RefereeAuthController extends Controller
     public function refereeRegisterStep2(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'visapage' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'image1' => 'required|image|mimes:jpg,png,jpeg|max:2048',
             'image2' => 'required|image|mimes:jpg,png,jpeg|max:2048',
         ]);
@@ -104,7 +103,7 @@ class RefereeAuthController extends Controller
             ] , 400);
         }
 
-        if($user->ppcopy != null && $user->visapage != null && $user->verification_image_1 != null && $user->verification_image_2 != null){
+        if($user->ppcopy != null && $user->verification_image_1 != null && $user->verification_image_2 != null){
             return response()->json([
                 'error' => 'already uploaded images'
             ] , 400);
@@ -112,9 +111,9 @@ class RefereeAuthController extends Controller
 
         // upload files
 
-        if ($request->hasFile('visapage')) {
-            $visapage_path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
-        }
+        // if ($request->hasFile('visapage')) {
+        //     $visapage_path = $this->UploadFile($request->file('visapage'), 'Referee/VisaPage');
+        // }
 
         if ($request->hasFile('image1')) {
             $image1_path = $this->UploadFile($request->file('image1'), 'Referee/verification1');
@@ -126,14 +125,14 @@ class RefereeAuthController extends Controller
 
 
         $referee_object = Referee::where('email' , $user->email)->first();
-        $referee_object->visapage = $visapage_path;
+        // $referee_object->visapage = $visapage_path;
         $referee_object->verification_image_1 = $image1_path;
         $referee_object->verification_image_2 = $image2_path;
         $referee_object->update();
 
         return response()->json([
             'message' => 'Files uploaded successfully',
-            'visapage' => $visapage_path,
+            // 'visapage' => $visapage_path,
             'verification_image_1' => $image1_path,
             'verification_image_2' => $image2_path
         ]);
@@ -143,7 +142,7 @@ class RefereeAuthController extends Controller
     public function refereeRegisterStep3(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'accountNo' => 'required|string',
+            'bankAccountNumber' => 'required|string|unique:referees',
             'accountName' => 'required|string',
             'bank' => 'required|string',
         ]);
@@ -155,36 +154,39 @@ class RefereeAuthController extends Controller
         $user = $request->user();
 
         // check previous step
-        if($user->visapage == null || $user->verification_image_1 == null || $user->verification_image_2 == null){
+        if($user->verification_image_1 == null || $user->verification_image_2 == null){
             return response()->json([
                 'error' => 'incompleted previous step'
             ] , 400);
         }
 
         $user->bank = $request->bank;
-        $user->bankAccountNumber = $request->accountNo;
+        $user->bankAccountNumber = $request->bankAccountNumber;
         $user->bankAccountName = $request->accountName;
         $user->update();
 
         // genereate otp and send to user
-        $otp = mt_rand(1000 , 9999);
-        $timestamp = microtime(true) * 1000;
+        // $otp = mt_rand(1000 , 9999);
+        // $timestamp = microtime(true) * 1000;
 
 
-        $expire_timestamp = $timestamp + 1000 * 60 * 1;
-        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+        // $expire_timestamp = $timestamp + 1000 * 60 * 1;
+        // $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
 
 
-        $otp_obj = RefereeOtp::create([
-            'userId' => $user->id,
-            'otp' => $otp,
-            'expireTime' => $expire_date,
-            'blocked' => false
-        ]);
+        // $otp_obj = RefereeOtp::create([
+        //     'userId' => $user->id,
+        //     'otp' => $otp,
+        //     'expireTime' => $expire_date,
+        //     'blocked' => false
+        // ]);
+
+        $checksum = $this->generateOTP($user);
 
         return response()->json([
             'message' => 'Bank details added successfully!',
             'referee' => $user,
+            'checksum' => $checksum
         ] , 200);
 
     }
@@ -206,6 +208,8 @@ class RefereeAuthController extends Controller
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'otp' => 'required|numeric',
+            'checksum' => 'required',
+            'em'
         ]);
 
         if ($validator->fails()) {
@@ -267,25 +271,28 @@ class RefereeAuthController extends Controller
         RefereeOtp::where('userId' , $request->user()->id)->delete();
 
         // generate new otp
-        $otp = mt_rand(1000 , 9999);
-        $timestamp = microtime(true) * 1000;
+        // $otp = mt_rand(1000 , 9999);
+        // $timestamp = microtime(true) * 1000;
 
 
-        $expire_timestamp = $timestamp + 1000 * 60 * 1;
-        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+        // $expire_timestamp = $timestamp + 1000 * 60 * 1;
+        // $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
 
 
-        $otp_obj = RefereeOtp::create([
-            'userId' => $request->user()->id,
-            'otp' => $otp,
-            'expireTime' => $expire_date,
-            'blocked' => false
-        ]);
+        // $otp_obj = RefereeOtp::create([
+        //     'userId' => $request->user()->id,
+        //     'otp' => $otp,
+        //     'expireTime' => $expire_date,
+        //     'blocked' => false
+        // ]);
 
-        // send
+        $checksum = $this->generateOTP($user);
+
+        // send it using sms gateway
 
         return response()->json([
-            'message' => 'OTP sent'
+            'message' => 'OTP sent',
+            'checksum' => $checksum
         ] , 200);
 
     }
@@ -365,13 +372,19 @@ class RefereeAuthController extends Controller
             return response()->json(['error' => 'Invalid otp!'], 400);
         }
 
+        if($referee->phoneVerified == false){
+            $referee->phoneVerified = true;
+            $referee->update();
+        }
+
         $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
 
         RefereeOtp::where('userId' , $referee->id)->delete();
 
         return response()->json([
             'message' => 'user logged in successfully!',
-            'token' => $token
+            'token' => $token,
+            'referee' => $referee
         ]);
 
     }
