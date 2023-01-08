@@ -437,6 +437,7 @@ class RefereeAuthController extends Controller
             if ($request->hasFile('propic')) {
                 $propic_path = $this->UploadFile($request->file('propic'), 'Referee/propic');
                 $referee->propic = $propic_path;
+                $referee->update();
             }
         }
 
