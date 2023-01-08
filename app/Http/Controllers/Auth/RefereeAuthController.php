@@ -389,6 +389,106 @@ class RefereeAuthController extends Controller
 
     }
 
+
+    public function editRefereeProfile(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'name' =>  'required|string',
+            'contact' => 'required|string',
+            'email' =>  'required|string|email',
+            'propic' => 'image|mimes:jpg,png,jpeg|max:2048',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // check if contact is already used
+        $contact_check = Referee::where('contact' , $request->contact)->first();
+        $referee = $request->user();
+
+        if($contact_check){
+
+            if($contact_check->id != $referee->id){
+                return response()->json([
+                    'message' => 'contact is used in another Referee account'
+                ] , 400);
+            }
+
+        }
+
+        $email_check = Referee::where('email' , $request->email)->first();
+
+        if($email_check){
+
+            if($email_check->id != $referee->id){
+                return response()->json([
+                    'message' => 'email is used in another Referee account'
+                ] , 400);
+            }
+
+        }
+
+        if($request->hasFile('propic')){
+
+            $propic_path = null;
+
+            if ($request->hasFile('propic')) {
+                $propic_path = $this->UploadFile($request->file('propic'), 'Referee/propic');
+                $referee->propic = $propic_path;
+            }
+        }
+
+
+        $referee->fullname = $request->name;
+        $referee->contact = $request->contact;
+        $referee->email = $request->email;
+        $referee->update();
+
+        return response()->json([
+            'message' => 'Referee account updated successfully',
+            'referee' => $referee
+        ]);
+
+    }
+
+    public function uploadRefereeProfilePic(Request $request){
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'propic' => 'required|image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $referee = $request->user();
+
+        //delete old propic
+        if($referee->propic != null){
+            $this->UploadFile($referee->propic);
+        }
+
+        $propic_path = null;
+
+        if ($request->hasFile('propic')) {
+            $propic_path = $this->UploadFile($request->file('propic'), 'Referee/propic');
+        }
+
+        $referee->propic = $propic_path;
+        $referee->update();
+
+        return response()->json([
+            'message' => 'Profile picture uploaded successfully!',
+            'referee' => $referee
+        ]);
+
+
+    }
+
+
+
     private function generateOTP($user){
         // genereate otp and send to user
         $otp = mt_rand(1000 , 9999);
