@@ -22,7 +22,8 @@ class Referee extends Authenticatable
         'phoneVerified',
         'verification_image_1',
         'verification_image_2',
-        'introducerId'
+        'introducerId',
+        'propic'
     ];
 
     protected $hidden = [
