@@ -137,7 +137,7 @@ class CustomerSubmissionController extends Controller
 
         }else{
 
-            $belongs_to = $this->getSubmissionIntroducer($submission);
+            $belongs_to = $this->getSubmissionIntroducer($submission->id);
 
             if($belongs_to->id != $introducer_user->id){
 
