@@ -8,6 +8,7 @@ use App\Models\Referee;
 use App\Models\Admin;
 use App\Models\RefereeWallet;
 use App\Models\Payment;
+use App\Models\WalletTransaction;
 use PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -58,7 +59,7 @@ class PaymentController extends Controller
             $wallet->update();
 
             return response()->json([
-                'message' => 'Pending request added successfully!',
+                'message' => 'Payment request added successfully!',
                 'payment' => $p
             ]);
 
@@ -92,7 +93,7 @@ class PaymentController extends Controller
             ];
 
             $pdf = PDF::loadView('/PDF/PaymentRequest', $data);
-            return $pdf->download('PaymentRequestSlip.pdf');
+            return $pdf->download('PaymentRequestSlip_'.$p->id.'.pdf');
 
         }
 
@@ -101,6 +102,116 @@ class PaymentController extends Controller
 
     public function paymentStateChange(Request $request){
 
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'payment_id' => 'required',
+            'state' => 'required|in:Success,Rejected'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $admin = $request->user();
+
+        // get the paymnet object
+        $payment = Payment::where('id' , $request->payment_id)->first();
+
+        if(!$payment){
+            return response()->json([
+                'message' => 'Payment request not found!'
+            ] , 404);
+        }
+
+        if($payment->status != 'Pending'){
+            return response()->json([
+                'message' => 'Payment request already processed!'
+            ] , 400);
+        }
+
+        // update the status
+        $payment->status = $request->state;
+        $payment->update();
+
+        $wallet = RefereeWallet::where('userId' , $payment->referee_id)->first();
+
+
+        if($request->state == 'Rejected'){
+
+            if(!$wallet){
+                return response()->json([
+                    'message' => 'Referee wallet not found!'
+                ] , 404);
+            }
+
+            // refund to the wallet
+            $wallet->balance = $wallet->balance + $payment->amount;
+            $payment->checked_by = $admin->id;
+            $wallet->update();
+
+            WalletTransaction::create([
+                'userId' => $payment->referee_id,
+                'walletId' => $wallet->id,
+                'transactionType' => 'Refund',
+                'amount' => $payment->amount
+
+            ]);
+
+            return response()->json([
+                'message' => 'Payment status changed successfully',
+                'payment' => $payment,
+                'wallet' => $wallet
+            ]);
+
+        }
+
+        WalletTransaction::create([
+            'userId' => $payment->referee_id,
+            'walletId' => $wallet->id,
+            'transactionType' => 'Withdraw',
+            'amount' => $payment->amount
+
+        ]);
+
+        return response()->json([
+            'message' => 'Payment status changed successfully',
+            'payment' => $payment,
+            'wallet' => $wallet
+        ]);
+
     }
+
+    public function getAllPayments(Request $request){
+        $payments = Payment::orderBy('id', 'desc')->paginate(15);
+
+        return response()->json([
+            'payments' => $payments
+        ]);
+
+    }
+
+    public function getPaymentByCode(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'code' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $payment = Payment::where('code' , $request->code)->first();
+
+        if(!$payment){
+            return response()->json([
+                'message' => 'Payment request not found!'
+            ] , 404);
+        }
+
+        return response()->json([
+            'payment' => $payment
+        ]);
+
+    }
+
 
 }

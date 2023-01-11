@@ -114,6 +114,13 @@
                     <th>Account Number:</th>
                     <td>{{ $user->bankAccountNumber }}</td>
                 </tr>
+
+            </table>
+        </div>
+
+        <div class="customer-details">
+            <center><h2>Referee Wallet Details</h2></center>
+            <table>
                 <tr>
                     <th>Previous Balance:</th>
                     <td>{{ $prev_balance }}</td>
