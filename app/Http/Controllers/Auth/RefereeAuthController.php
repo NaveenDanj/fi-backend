@@ -488,6 +488,14 @@ class RefereeAuthController extends Controller
 
     }
 
+    public function getUnreadNotifications(Request $request){
+        $unreads = $request->user()->unreadNotifications;
+        $request->user()->unreadNotifications->markAsRead();
+
+        return response()->json([
+            'messages' => $unreads
+        ]);
+    }
 
 
     private function generateOTP($user){
