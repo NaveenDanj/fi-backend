@@ -163,7 +163,7 @@ class CustomerSubmissionController extends Controller
                 $this->handleRefereeCommision($submission);
 
                 // notify the referee
-                $referee = Referee::where('id' , $submission->refereeId);
+                $referee = Referee::where('id' , $submission->refereeId)->first();
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
 
