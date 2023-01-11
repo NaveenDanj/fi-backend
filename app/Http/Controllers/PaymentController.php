@@ -65,13 +65,6 @@ class PaymentController extends Controller
 
             $code = Str::uuid()->toString();
 
-            // pdf data
-            $data = [
-                'title' => 'Your title',
-                'date' => date('m/d/Y'),
-                'users' => $users
-            ];
-
             $p = Payment::create([
                 'code' => $code,
                 'referee_id' => $referee->id,
@@ -83,6 +76,16 @@ class PaymentController extends Controller
             // update user wallet
             $wallet->balance = $wallet->balance - $request->amount;
             $wallet->update();
+
+            // pdf data
+            $data = [
+                'date' => date('m/d/Y'),
+                'user' => $referee,
+                'payment' => $p
+            ];
+
+            $pdf = PDF::loadView('/PDF/PaymentRequest', $data);
+            return $pdf->download('test.pdf');
 
             return response()->json([
                 'message' => 'Not implemented yet!',

@@ -65,23 +65,23 @@
                 <tr>
                     <th>Payment ID</th>
                     <th>Amount Due</th>
-                    <th>Due Date</th>
+                    <th>Request Date</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>{{ $payment->id }}</td>
                     <td>{{ $payment->amount }}</td>
-                    <td>{{ $payment->due_date }}</td>
+                    <td>{{ $payment->created_at }}</td>
                 </tr>
             </tbody>
         </table>
         <div class="customer-details">
-            <h2>Customer Details</h2>
+            <center><h2>Referee Details</h2></center>
             <table>
                 <tr>
                     <th>Name:</th>
-                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->fullname }}</td>
                 </tr>
                 <tr>
                     <th>Email:</th>
@@ -89,11 +89,28 @@
                 </tr>
                 <tr>
                     <th>Phone:</th>
-                    <td>{{ $user->phone }}</td>
+                    <td>{{ $user->contact }}</td>
                 </tr>
             </table>
         </div>
-        <p>Please make your payment at the earliest.</p>
+
+        <div class="customer-details">
+            <center><h2>Referee Bank Details</h2></center>
+            <table>
+                <tr>
+                    <th>Bank:</th>
+                    <td>{{ $user->bank }}</td>
+                </tr>
+                <tr>
+                    <th>Account Name:</th>
+                    <td>{{ $user->bankAccountName }}</td>
+                </tr>
+                <tr>
+                    <th>Account Number:</th>
+                    <td>{{ $user->bankAccountNumber }}</td>
+                </tr>
+            </table>
+        </div>
     </div>
 </body>
 
