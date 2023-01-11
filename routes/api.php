@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RefereeAuthController;
 use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\IntroducerController;
 use App\Http\Controllers\MetaDataController;
+use App\Http\Controllers\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,4 +67,8 @@ Route::prefix('introducer')->group(function (){
 
 Route::prefix('meta')->group(function (){
     Route::get('/load-meta-data' , [MetaDataController::class , 'loadMetaData'] );
+});
+
+Route::prefix('payment')->group(function(){
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/payment-request' , [PaymentController::class , 'paymentRequest'] );
 });

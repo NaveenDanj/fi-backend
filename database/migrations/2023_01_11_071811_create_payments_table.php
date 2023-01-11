@@ -15,11 +15,12 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('code' , 512)->unique()->nullable();
             $table->bigInteger('referee_id');
             $table->string('type' , 10);
             $table->decimal('amount' , 19 , 2);
             $table->string('status' , 20);
-            $table->bigInteger('checked_by');
+            $table->bigInteger('checked_by')->nullable();
             $table->timestamps();
         });
     }
