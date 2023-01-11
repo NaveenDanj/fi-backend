@@ -82,8 +82,8 @@ class RefereeAuthController extends Controller
     public function refereeRegisterStep2(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'image1' => 'required|image|mimes:jpg,png,jpeg|max:2048',
-            'image2' => 'required|image|mimes:jpg,png,jpeg|max:2048',
+            'image1' => 'image|mimes:jpg,png,jpeg|max:2048',
+            'image2' => 'image|mimes:jpg,png,jpeg|max:2048',
         ]);
 
         if ($validator->fails()) {
@@ -142,9 +142,9 @@ class RefereeAuthController extends Controller
     public function refereeRegisterStep3(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
-            'bankAccountNumber' => 'required|string|unique:referees',
-            'accountName' => 'required|string',
-            'bank' => 'required|string',
+            'bankAccountNumber' => 'string|unique:referees',
+            'accountName' => 'string',
+            'bank' => 'string',
         ]);
 
         if ($validator->fails()) {
@@ -154,11 +154,11 @@ class RefereeAuthController extends Controller
         $user = $request->user();
 
         // check previous step
-        if($user->verification_image_1 == null || $user->verification_image_2 == null){
-            return response()->json([
-                'error' => 'incompleted previous step'
-            ] , 400);
-        }
+        // if($user->verification_image_1 == null || $user->verification_image_2 == null){
+        //     return response()->json([
+        //         'error' => 'incompleted previous step'
+        //     ] , 400);
+        // }
 
         $user->bank = $request->bank;
         $user->bankAccountNumber = $request->bankAccountNumber;
