@@ -123,6 +123,7 @@ class CustomerSubmissionController extends Controller
         // check if admin is whether a admin or introducer
         $introducer_user = $request->user();
 
+
         if($introducer_user->role == 'admin'){
 
             $submission->status = $request->status;
@@ -138,6 +139,7 @@ class CustomerSubmissionController extends Controller
         }else{
 
             $belongs_to = $this->getSubmissionIntroducer($submission->id);
+
 
             if($belongs_to->id != $introducer_user->id){
 
@@ -191,7 +193,7 @@ class CustomerSubmissionController extends Controller
     }
 
     private function getSubmissionIntroducer($id){
-        $submissions = CustomerSubmission::whereIn('id' , $id)->first();
+        $submissions = CustomerSubmission::where('id' , $id)->first();
         $referee = Referee::where('id' , $submissions->refereeId)->first();
         $introducer_user = Admin::where('id' , $referee->introducerId )->first();
         return $introducer_user;
