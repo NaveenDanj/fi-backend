@@ -92,16 +92,14 @@ class PaymentController extends Controller
             ];
 
             $pdf = PDF::loadView('/PDF/PaymentRequest', $data);
-            return $pdf->download('test.pdf');
-
-            return response()->json([
-                'message' => 'Not implemented yet!',
-                'payment' => ''
-            ]);
-
+            return $pdf->download('PaymentRequestSlip.pdf');
 
         }
 
+
+    }
+
+    public function paymentStateChange(Request $request){
 
     }
 
