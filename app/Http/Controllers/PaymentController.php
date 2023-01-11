@@ -12,6 +12,9 @@ use App\Models\WalletTransaction;
 use PDF;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\RefereePaymentStateChange;
+
 class PaymentController extends Controller
 {
 
@@ -156,6 +159,10 @@ class PaymentController extends Controller
 
             ]);
 
+            // notify the referee
+            $referee = Referee::where('id' , $payment->referee_id)->first();
+            Notification::send($referee, new RefereePaymentStateChange($referee , $payment->amount , 'Reject'));
+
             return response()->json([
                 'message' => 'Payment status changed successfully',
                 'payment' => $payment,
@@ -171,6 +178,10 @@ class PaymentController extends Controller
             'amount' => $payment->amount
 
         ]);
+
+        $referee = Referee::where('id' , $payment->referee_id)->first();
+        Notification::send($referee, new RefereePaymentStateChange($referee , $payment->amount , 'Success'));
+
 
         return response()->json([
             'message' => 'Payment status changed successfully',
@@ -210,6 +221,20 @@ class PaymentController extends Controller
         return response()->json([
             'payment' => $payment
         ]);
+
+    }
+
+    public function getRefereePaymentList(Request $request){
+
+        $referee = $request->user();
+        $payments = Payment::where('referee_id' , $referee->id)->paginate(15);
+        $wallet = RefereeWallet::where('userId' , $referee->id)->first();
+
+        return response()->json([
+            'wallet_balance' => $wallet->balance,
+            'payments' => $payments
+        ]);
+
 
     }
 

@@ -11,7 +11,7 @@ class RefereePaymentStateChange extends Notification
 {
     use Queueable;
     public $type;
-    public $payment;
+    public $amount;
     public $user;
 
     /**
@@ -19,11 +19,11 @@ class RefereePaymentStateChange extends Notification
      *
      * @return void
      */
-    public function __construct($user , $payment , $type)
+    public function __construct($user , $amount , $type)
     {
         $this->type = $type;
-        $this->payment = $payment;
-        $this->user = $type;
+        $this->amount = $amount;
+        $this->user = $user;
     }
 
     /**
@@ -48,11 +48,11 @@ class RefereePaymentStateChange extends Notification
 
         if($this->type == 'Reject'){
             return [
-                'message' => "We're sorry, but your payment of ".$this->payment->amount." has failed. Please check your payment information and try again."
+                'message' => "We're sorry, but your payment of ".$this->amount." has failed. Please check your payment information and try again."
             ];
         }else{
             return [
-                'message' => "Your payment of ".$this->payment->amount." has been successfully processed. Thank you for your transaction."
+                'message' => "Your payment of ".$this->amount." has been successfully processed. Thank you for your transaction."
             ];
         }
 
