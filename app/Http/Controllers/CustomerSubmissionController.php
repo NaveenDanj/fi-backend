@@ -10,6 +10,8 @@ use App\Models\RefereeWallet;
 use App\Models\WalletTransaction;
 use App\Models\Admin;
 
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\RefereeSubmissionStateChange;
 
 class CustomerSubmissionController extends Controller
 {
@@ -131,6 +133,11 @@ class CustomerSubmissionController extends Controller
 
             $this->handleRefereeCommision($submission);
 
+            // notify the referee
+            $referee = Referee::where('id' , $submission->refereeId)->first();
+            $notification_data = "Submission status has been changed!";
+            Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
+
             return response()->json([
                 'message' => 'submission status updated successfully',
                 'submission' => $submission
@@ -154,6 +161,12 @@ class CustomerSubmissionController extends Controller
                 $submission->update();
 
                 $this->handleRefereeCommision($submission);
+
+                // notify the referee
+                $referee = Referee::where('id' , $submission->refereeId);
+                $notification_data = "Submission status has been changed!";
+                Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
+
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
