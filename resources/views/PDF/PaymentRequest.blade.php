@@ -59,6 +59,11 @@
 </head>
 <body>
     <div class="container">
+
+        <center>
+            <img src="data:image/png;base64, {!! $qrcode !!}">
+        </center>
+
         <h1>Payment Request Slip</h1>
         <table>
             <thead>
@@ -108,6 +113,14 @@
                 <tr>
                     <th>Account Number:</th>
                     <td>{{ $user->bankAccountNumber }}</td>
+                </tr>
+                <tr>
+                    <th>Previous Balance:</th>
+                    <td>{{ $prev_balance }}</td>
+                </tr>
+                <tr>
+                    <th>Available Balance:</th>
+                    <td>{{ $current_balance }}</td>
                 </tr>
             </table>
         </div>

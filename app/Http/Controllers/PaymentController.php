@@ -9,6 +9,7 @@ use App\Models\Admin;
 use App\Models\RefereeWallet;
 use App\Models\Payment;
 use PDF;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PaymentController extends Controller
 {
@@ -74,14 +75,20 @@ class PaymentController extends Controller
             ]);
 
             // update user wallet
+            $temp_balance = $wallet->balance;
             $wallet->balance = $wallet->balance - $request->amount;
             $wallet->update();
+
+            $qr  = base64_encode(QrCode::format('svg')->size(200)->errorCorrection('H')->generate($code));
 
             // pdf data
             $data = [
                 'date' => date('m/d/Y'),
                 'user' => $referee,
-                'payment' => $p
+                'payment' => $p,
+                'qrcode' => $qr,
+                'prev_balance' => $temp_balance,
+                'current_balance' => $wallet->balance
             ];
 
             $pdf = PDF::loadView('/PDF/PaymentRequest', $data);
