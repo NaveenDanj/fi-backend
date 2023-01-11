@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "604d2d741090b94f4c3bd337a29bdebe",
+    "content-hash": "1b98a360d07658ae6535afec52b9a6ce",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3355,6 +3355,65 @@
                 "source": "https://github.com/SimpleSoftwareIO/simple-qrcode/tree/4.2.0"
             },
             "time": "2021-02-08T20:43:55+00:00"
+        },
+        {
+            "name": "smsglobal/smsglobal-php",
+            "version": "v1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/smsglobal/smsglobal-php.git",
+                "reference": "c3eac176592a6e420f8dd42cad02103a9d45aa83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/smsglobal/smsglobal-php/zipball/c3eac176592a6e420f8dd42cad02103a9d45aa83",
+                "reference": "c3eac176592a6e420f8dd42cad02103a9d45aa83",
+                "shasum": ""
+            },
+            "require": {
+                "guzzlehttp/guzzle": "^7.2",
+                "php": ">=7.3"
+            },
+            "require-dev": {
+                "php-http/guzzle7-adapter": "^0.1.1",
+                "phpunit/phpunit": ">=8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SMSGlobal\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Sahil Saggar"
+                },
+                {
+                    "name": "SMSGlobal Dev Team",
+                    "email": "developers@smsglobal.com"
+                }
+            ],
+            "description": "SMSGlobal PHP Client Library",
+            "homepage": "https://www.smsglobal.com/developers/?utm_source=dev&utm_medium=packagist&utm_campaign=php_sdk",
+            "keywords": [
+                "api",
+                "library",
+                "php",
+                "rest",
+                "restapi",
+                "sdk",
+                "sms",
+                "smsglobal"
+            ],
+            "support": {
+                "issues": "https://github.com/smsglobal/smsglobal-php/issues",
+                "source": "https://github.com/smsglobal/smsglobal-php/tree/v1.3.0"
+            },
+            "time": "2021-06-21T07:30:21+00:00"
         },
         {
             "name": "spatie/image-optimizer",

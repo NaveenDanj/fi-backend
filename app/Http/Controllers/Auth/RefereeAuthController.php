@@ -14,6 +14,8 @@ use Illuminate\Support\Carbon;
 use App\Models\RefereeWallet;
 use DateTime;
 use Auth;
+use SMSGlobal;
+
 
 class RefereeAuthController extends Controller
 {
@@ -516,6 +518,9 @@ class RefereeAuthController extends Controller
             'blocked' => false,
             'checksum' => $checksum
         ]);
+
+        // send
+        \SMSGlobal\Credentials::set('YOUR_API_KEY', 'YOUR_SECRET_KEY');
 
 
         return $checksum;

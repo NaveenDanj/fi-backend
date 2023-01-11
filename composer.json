@@ -12,6 +12,7 @@
         "laravel/sanctum": "^3.0",
         "laravel/tinker": "^2.7",
         "simplesoftwareio/simple-qrcode": "~4",
+        "smsglobal/smsglobal-php": "*",
         "spatie/laravel-image-optimizer": "^1.7"
     },
     "require-dev": {
