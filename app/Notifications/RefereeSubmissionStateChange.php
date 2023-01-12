@@ -44,7 +44,9 @@ class RefereeSubmissionStateChange extends Notification
     public function toArray($notifiable)
     {
         return [
-            'message' => 'Your submission for submission id => '.$this->submission->id.' has been updated to "'. $this->submission->status .'". Contact us if you have any questions.'
+            'type' => 'submissionStatusChange',
+            'title' => 'Submission updated',
+            'message' => 'Your submission for submission name -'.$this->submission->name.' has been updated to "'. $this->submission->status .'".'
         ];
     }
 }

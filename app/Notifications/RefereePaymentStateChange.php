@@ -48,10 +48,14 @@ class RefereePaymentStateChange extends Notification
 
         if($this->type == 'Reject'){
             return [
+                'type' => 'paymentRequestFailed',
+                'title' => 'Payment Request failed',
                 'message' => "We're sorry, but your payment of ".$this->amount." has failed. Please check your payment information and try again."
             ];
         }else{
             return [
+                'type' => 'paymentRequestSuccess',
+                'title' => 'Payment Request success',
                 'message' => "Your payment of ".$this->amount." has been successfully processed. Thank you for your transaction."
             ];
         }

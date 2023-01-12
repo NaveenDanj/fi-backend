@@ -15,7 +15,8 @@ class Payment extends Model
         'type',
         'amount',
         'status',
-        'checked_by'
+        'checked_by',
+        'pdf_link'
     ];
 
 }

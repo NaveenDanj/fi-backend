@@ -14,10 +14,11 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\RefereePaymentStateChange;
+use App\Traits\Upload;
 
 class PaymentController extends Controller
 {
-
+    use Upload;
     public function paymentRequest(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -95,8 +96,17 @@ class PaymentController extends Controller
                 'current_balance' => $wallet->balance
             ];
 
-            $pdf = PDF::loadView('/PDF/PaymentRequest', $data);
-            return $pdf->download('PaymentRequestSlip_'.$p->id.'.pdf');
+            $filename = 'PaymentRequestSlip_'.$p->id.'.pdf';
+            $path = 'Referee/PaymentSlip/'.$filename;
+            $pdf = PDF::loadView('/PDF/PaymentRequest', $data)->save('../storage/app/public/Referee/PaymentSlip/'.$filename)->stream($filename);
+
+            $p->pdf_link = $path;
+            $p->update();
+
+            return response()->json([
+                'message' => 'Payment request added successfully!',
+                'pdf' => $path
+            ]);
 
         }
 
@@ -163,6 +173,9 @@ class PaymentController extends Controller
             $referee = Referee::where('id' , $payment->referee_id)->first();
             Notification::send($referee, new RefereePaymentStateChange($referee , $payment->amount , 'Reject'));
 
+            // delete the slip
+            $this->deleteFile($payment->pdf_link);
+
             return response()->json([
                 'message' => 'Payment status changed successfully',
                 'payment' => $payment,
@@ -182,6 +195,8 @@ class PaymentController extends Controller
         $referee = Referee::where('id' , $payment->referee_id)->first();
         Notification::send($referee, new RefereePaymentStateChange($referee , $payment->amount , 'Success'));
 
+        // delete the slip
+        $this->deleteFile($payment->pdf_link);
 
         return response()->json([
             'message' => 'Payment status changed successfully',
