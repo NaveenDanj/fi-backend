@@ -469,13 +469,14 @@ class RefereeAuthController extends Controller
 
         //delete old propic
         if($referee->propic != null){
-            $this->UploadFile($referee->propic);
+            $this->deleteFile($referee->propic);
         }
 
         $propic_path = null;
 
         if ($request->hasFile('propic')) {
             $propic_path = $this->UploadFile($request->file('propic'), 'Referee/propic');
+            // $this->UploadFile($request->file('image1'), 'Referee/verification1');
         }
 
         $referee->propic = $propic_path;
@@ -483,6 +484,92 @@ class RefereeAuthController extends Controller
 
         return response()->json([
             'message' => 'Profile picture uploaded successfully!',
+            'referee' => $referee
+        ]);
+
+
+    }
+
+
+    public function updateRefereeVerficationImages(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'image1' => 'image|mimes:jpg,png,jpeg|max:2048',
+            'image2' => 'image|mimes:jpg,png,jpeg|max:2048'
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $referee = $request->user();
+
+        if ( !$request->hasFile('image1') && !$request->hasFile('image2') ) {
+            return response()->json([
+                'message' => 'Please upload atleast 1 image!'
+            ] , 400);
+        }
+
+        $img1 = null;
+        $img2 = null;
+
+        if ($request->hasFile('image1')) {
+            $img1 = $this->UploadFile($request->file('image1'), 'Referee/verification1');
+            $referee->verification_image_1 = $img1;
+            $referee->update();
+        }
+
+        if ($request->hasFile('image2')) {
+            $img2 = $this->UploadFile($request->file('image2'), 'Referee/verification2');
+            $referee->verification_image_2 = $img2;
+            $referee->update();
+        }
+
+
+        return response()->json([
+            'message' => 'Referee account updated successfully',
+            'referee' => $referee
+        ]);
+
+    }
+
+    public function updateRefereeBankDetails(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'bankAccountNumber' => 'string',
+            'accountName' => 'string',
+            'bank' => 'string',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $referee = $request->user();
+
+        $check_acc_nm = Referee::where('bankAccountNumber' , $request->bankAccountNumber)->first();
+
+        if($check_acc_nm){
+
+            if($check_acc_nm->id != $referee->id ){
+                return response()->json([
+                    'message' => 'Bank account number used in another account!',
+                ] , 400);
+            }
+
+        }
+
+
+
+        $referee->bank = $request->bank;
+        $referee->bankAccountName = $request->accountName;
+        $referee->bankAccountNumber  = $request->bankAccountNumber;
+        $referee->update();
+
+        return response()->json([
+            'message' => 'Referee account updated successfully',
             'referee' => $referee
         ]);
 
