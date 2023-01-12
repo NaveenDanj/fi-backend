@@ -43,10 +43,11 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step2' , [RefereeAuthController::class , 'refereeRegisterStep2']);
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-step3' , [RefereeAuthController::class , 'refereeRegisterStep3']);
     Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-register-verify-otp' , [RefereeAuthController::class , 'refereeVerifyOTP']);
-    Route::middleware(['auth:sanctum' , 'abilities:referee'])->post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
 
+    Route::post('/referee-resend-otp' , [RefereeAuthController::class , 'resendOtp']);
     Route::post('/referee-login' , [RefereeAuthController::class , 'refereeLogin']);
     Route::post('/referee-login-verify-otp' , [RefereeAuthController::class , 'verifyOTPLogin']);
+
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-me' , [RefereeAuthController::class , 'refereeMe']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-edit-profile' , [RefereeAuthController::class , 'editRefereeProfile']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-get-unread-notifications' , [RefereeAuthController::class , 'getUnreadNotifications']);

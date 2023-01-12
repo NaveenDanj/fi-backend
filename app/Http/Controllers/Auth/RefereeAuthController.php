@@ -258,8 +258,22 @@ class RefereeAuthController extends Controller
 
     public function resendOtp(Request $request){
 
-        // check user has previous otp's generated
-        $otp_check = RefereeOtp::where('userId' , $request->user()->id)->first();
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'checksum' => 'string|required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $otp_check = RefereeOtp::where('checksum' , $request->checksum)->first();
+
+        if(!$otp_check){
+            return response()->json([
+                'message' => 'Checksum is invalid'
+            ] , 400);
+        }
+
 
         if($otp_check){
             if( !$this->checkOTPExpired($otp_check->expireTime) ){
@@ -269,26 +283,11 @@ class RefereeAuthController extends Controller
             }
         }
 
-        // delete previous Otp
-        RefereeOtp::where('userId' , $request->user()->id)->delete();
-
-        // generate new otp
-        // $otp = mt_rand(1000 , 9999);
-        // $timestamp = microtime(true) * 1000;
-
-
-        // $expire_timestamp = $timestamp + 1000 * 60 * 1;
-        // $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
-
-
-        // $otp_obj = RefereeOtp::create([
-        //     'userId' => $request->user()->id,
-        //     'otp' => $otp,
-        //     'expireTime' => $expire_date,
-        //     'blocked' => false
-        // ]);
+        $user = Referee::where('id' , $otp_check->userId)->first();
 
         $checksum = $this->generateOTP($user);
+
+        $otp_check->delete();
 
         // send it using sms gateway
 
