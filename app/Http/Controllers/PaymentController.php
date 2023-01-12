@@ -219,7 +219,8 @@ class PaymentController extends Controller
         }
 
         return response()->json([
-            'payment' => $payment
+            'payment' => $payment,
+            'referee' => $request->user()
         ]);
 
     }
