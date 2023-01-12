@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 use App\Models\RefereeWallet;
 use DateTime;
 use Auth;
-use SMSGlobal;
+use SMSGlobal\Credentials;
 
 
 class RefereeAuthController extends Controller
@@ -617,6 +617,18 @@ class RefereeAuthController extends Controller
         return response()->json([
             'referee' => $user
         ]);
+    }
+
+    private function handleSendSMS($message){
+        Credentials::set('YOUR_API_KEY', 'YOUR_SECRET_KEY');
+        $otp = new \SMSGlobal\Resource\Otp();
+
+        try {
+            $response = $otp->send('9715826779660', '{*code*} is your SMSGlobal verification code.');
+
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
 }

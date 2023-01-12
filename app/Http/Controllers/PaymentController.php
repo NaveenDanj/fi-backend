@@ -74,7 +74,7 @@ class PaymentController extends Controller
             $p = Payment::create([
                 'code' => $code,
                 'referee_id' => $referee->id,
-                'type' => 'Bank',
+                'type' => $request->type,
                 'amount' => $request->amount,
                 'status' => 'Pending'
             ]);
@@ -243,7 +243,7 @@ class PaymentController extends Controller
     public function getRefereePaymentList(Request $request){
 
         $referee = $request->user();
-        $payments = Payment::where('referee_id' , $referee->id)->paginate(15);
+        $payments = Payment::where('referee_id' , $referee->id)->orderBy('id', 'desc')->paginate(15);
         $wallet = RefereeWallet::where('userId' , $referee->id)->first();
 
         return response()->json([
