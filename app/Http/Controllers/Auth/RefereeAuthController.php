@@ -606,8 +606,8 @@ class RefereeAuthController extends Controller
         ]);
 
         // send
-        \SMSGlobal\Credentials::set('YOUR_API_KEY', 'YOUR_SECRET_KEY');
-
+        $res = $this->handleSendSMS($otp , $user);
+        // dd($res);
 
         return $checksum;
     }
@@ -619,13 +619,13 @@ class RefereeAuthController extends Controller
         ]);
     }
 
-    private function handleSendSMS($message){
-        Credentials::set('YOUR_API_KEY', 'YOUR_SECRET_KEY');
-        $otp = new \SMSGlobal\Resource\Otp();
+    private function handleSendSMS($message , $user){
+        Credentials::set( '2875a9270fb49d070aa8bba99a0a97d4' , '862b3055cb08bde3c7f280b8a1e8a3e5'); // env('SMS_GLOBAL_API_KEY')  env('SMS_GLOBAL_SECRET_KEY')
+        $otp = new \SMSGlobal\Resource\Sms();
 
         try {
-            $response = $otp->send('9715826779660', '{*code*} is your SMSGlobal verification code.');
-
+            $response = $otp->sendToOne( $user->contact , $message.' is your SMSGlobal verification code.');
+            return $response;
         } catch (\Exception $e) {
             return false;
         }
