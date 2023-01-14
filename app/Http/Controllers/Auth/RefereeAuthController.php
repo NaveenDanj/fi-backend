@@ -585,6 +585,39 @@ class RefereeAuthController extends Controller
         ]);
     }
 
+    public function resetPassword(){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'oldPassword' => 'required|string',
+            'newPassword' => 'required|string'
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $referee = $request->user();
+
+        if(! Auth::guard('referee')->attempt(['email' => $referee->email, 'password' => $request->oldPassword])){
+
+            return response()->json([
+                'message' => 'Old password is incorrect'
+            ] , 401);
+
+        }
+
+        // reset password
+        $referee->password = Hash::make($request->newPassword);
+        $referee->update();
+
+        return response()->json([
+            'message' => 'Password reseted successfully!',
+            'referee' => $referee
+        ]);
+
+    }
+
 
     private function generateOTP($user){
         // genereate otp and send to user
