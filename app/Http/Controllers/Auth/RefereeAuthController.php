@@ -298,7 +298,6 @@ class RefereeAuthController extends Controller
 
     }
 
-
     public function refereeLogin(Request $request){
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'email' =>  'required|string|email',
@@ -389,7 +388,6 @@ class RefereeAuthController extends Controller
         ]);
 
     }
-
 
     public function editRefereeProfile(Request $request){
 
@@ -489,7 +487,6 @@ class RefereeAuthController extends Controller
 
 
     }
-
 
     public function updateRefereeVerficationImages(Request $request){
 
@@ -617,7 +614,6 @@ class RefereeAuthController extends Controller
         ]);
 
     }
-
 
     private function generateOTP($user){
         // genereate otp and send to user
