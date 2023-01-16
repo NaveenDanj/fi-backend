@@ -17,7 +17,7 @@ jobs:
       uses: appleboy/scp-action@master
       env:
         HOST: ${{ secrets.STG_REMOTE_HOST }}
-        USERNAME: ${{ secrets.STG_PRIVATE_KEY }}
+        USERNAME: ${{ secrets.SSH_REMOTE_USER }}
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       with:
