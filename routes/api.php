@@ -74,6 +74,7 @@ Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/view-introducer-submissions' , [CustomerSubmissionController::class , 'getSubmissionForIntroducer'] );
 });
 
+
 Route::prefix('introducer')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->delete('/delete-introducer' , [AdminAuthController::class , 'deleteIntroducer'] );
