@@ -21,4 +21,4 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
-          TARGET: ${{ secrets.SSH_TARGET }}
+          TARGET: /var/www/html/fi-backend
