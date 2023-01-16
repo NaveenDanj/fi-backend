@@ -1,36 +1,35 @@
-name: Staging
+name: Push-to-EC2
 
+# Trigger deployment only on push to master branch
 on:
   push:
-    branches: 
+    branches:
       - main
 
 jobs:
-  build:
+  deploy:
+    name: Deploy to EC2 on master branch push
+    runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest 
- 
     steps:
-    - uses: actions/checkout@v1
+      - name: Checkout the files
+        uses: actions/checkout@v2
 
-    - name: Copy repository contents via scp
-      uses: appleboy/scp-action@master
-      env:
-        HOST: ${{ secrets.SSH_REMOTE_HOST }}
-        USERNAME: ${{ secrets.SSH_REMOTE_USER }}
-        PORT: 22 
-        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-      with:
-        source: "."
-        target: "/var/www/html/fi-backend-v2"
-
-    - name: Executing remote command
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.SSH_REMOTE_HOST }}
-        USERNAME: ${{ secrets.SSH_REMOTE_USER }}
-        PORT: 22
-        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        script: |
-          php artisan migrate
-          sudo systemctl restart nginx
+      - name: Deploy to Server 1
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
+          TARGET: /var/www/html/fi-backend
+          
+      - name: Executing remote command
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_REMOTE_HOST }}
+          USERNAME: ${{ secrets.SSH_REMOTE_HOST }}
+          PORT: 22
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            php artiasn migrate
+            sudo systemctl restart nginx
