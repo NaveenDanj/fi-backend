@@ -22,7 +22,7 @@ jobs:
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       with:
         source: "."
-        target: "/etc/www/html/fi-backend"
+        target: "/var/www/html/fi-backend"
 
 
     - name: Executing remote command
