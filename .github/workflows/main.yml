@@ -21,15 +21,4 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           REMOTE_HOST: ${{ secrets.SSH_REMOTE_HOST }}
           REMOTE_USER: ${{ secrets.SSH_REMOTE_USER }}
-          TARGET: /var/www/html/fi-backend
-          
-      - name: Executing remote command
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_REMOTE_HOST }}
-          USERNAME: ${{ secrets.SSH_REMOTE_HOST }}
-          PORT: 22
-          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          script: |
-            php artiasn migrate
-            sudo systemctl restart nginx
+          TARGET: ${{ secrets.SSH_TARGET }}
