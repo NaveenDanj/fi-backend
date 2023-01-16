@@ -648,6 +648,16 @@ class RefereeAuthController extends Controller
         ]);
     }
 
+    public function getAllReferees(Request $request){
+        $referees = Referee::paginate(15);
+
+        return response()->json([
+            'referees' => $referees
+        ]);
+
+    }
+
+
     private function handleSendSMS($message , $user){
         Credentials::set( '2875a9270fb49d070aa8bba99a0a97d4' , '862b3055cb08bde3c7f280b8a1e8a3e5'); // env('SMS_GLOBAL_API_KEY')  env('SMS_GLOBAL_SECRET_KEY')
         $otp = new \SMSGlobal\Resource\Sms();
