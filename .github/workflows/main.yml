@@ -32,7 +32,7 @@ jobs:
         USERNAME: ${{ secrets.SSH_REMOTE_USER }}
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-        script:
+        script: |
           cd /var/www/html/fi-backend
           php artisan migrate
           sudo systemctl restart nginx
