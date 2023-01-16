@@ -22,7 +22,7 @@ jobs:
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       with:
         source: "."
-        target: "/var/www/html/fi-backend"
+        target: "/var/www/html/fi-backend-v2"
 
     - name: Executing remote command
       uses: appleboy/ssh-action@master
