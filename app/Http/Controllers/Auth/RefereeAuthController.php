@@ -122,7 +122,7 @@ class RefereeAuthController extends Controller
         }
 
         if ($request->hasFile('image2')) {
-            $image2_path = $this->UploadFile($request->file('image2'), 'Referee/verification1');
+            $image2_path = $this->UploadFile($request->file('image2'), 'Referee/verification2');
         }
 
 

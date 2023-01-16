@@ -37,6 +37,9 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/admin-register' , [AdminAuthController::class , 'adminRegister']);
     Route::post('/admin-login' , [AdminAuthController::class , 'adminLogin']);
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/admin-me' , [AdminAuthController::class , 'currentAdminUser']);
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/admin-get-all-admins' , [AdminAuthController::class , 'getAllAdmin']);
+
+
 
     // referee registration steps
     Route::post('/referee-register-step1' , [RefereeAuthController::class , 'refereeRegisterStep1']);

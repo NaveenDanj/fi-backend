@@ -114,4 +114,14 @@ class AdminAuthController extends Controller
 
     }
 
+    public function getAllAdmin(Request $request){
+
+        $admins = Admin::where('role' , 'admin')->paginate(15);
+
+        return response()->json([
+            'admin_users' => $admins
+        ]);
+
+    }
+
 }
