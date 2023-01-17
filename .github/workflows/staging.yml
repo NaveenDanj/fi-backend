@@ -22,7 +22,7 @@ jobs:
         KEY: ${{ secrets.SSH_PRIVATE_KEY }}
       with:
         source: "."
-        target: "/var/www/html/fi-backend"
+        target: "/var/www/html/web-app"
 
 
     - name: Executing remote command
@@ -33,5 +33,5 @@ jobs:
         PORT: ${{ secrets.PORT }}
         KEY: ${{ secrets.STG_PRIVATE_KEY }}
         script: |
-          cd /var/www/html/fi-backend
+          cd /var/www/html/web-app
           php artisan migrate
