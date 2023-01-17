@@ -36,4 +36,3 @@ jobs:
           cd /var/www/html/fi-backend
           php artisan migrate
           php artisan cache:clear
-          php artisan config:cache
