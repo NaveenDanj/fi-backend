@@ -246,10 +246,21 @@ class PaymentController extends Controller
         $payments = Payment::where('referee_id' , $referee->id)->orderBy('id', 'desc')->paginate(15);
         $wallet = RefereeWallet::where('userId' , $referee->id)->first();
 
-        return response()->json([
-            'wallet_balance' => $wallet->balance,
-            'payments' => $payments
-        ]);
+        if($wallet){
+
+            return response()->json([
+                'wallet_balance' => null,
+                'payments' => $payments
+            ]);
+
+        }else{
+
+            return response()->json([
+                'wallet_balance' => $wallet->balance,
+                'payments' => $payments
+            ]);
+
+        }
 
 
     }
