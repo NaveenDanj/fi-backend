@@ -35,5 +35,6 @@ jobs:
         script: |
           cd /var/www/html/fi-backend
           php artisan migrate
+          sudo chgrp -R www-data storage bootstrap/cache
+          sudo chmod -R ug+rwx storage bootstrap/cache
           php artisan cache:clear
-          php artisan config:cache
