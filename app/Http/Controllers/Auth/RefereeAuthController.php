@@ -185,10 +185,13 @@ class RefereeAuthController extends Controller
 
         $checksum = $this->generateOTP($user);
 
+        $otp = RefereeOtp::where('checksum' , $checksum)->first();
+
         return response()->json([
             'message' => 'Bank details added successfully!',
             'referee' => $user,
-            'checksum' => $checksum
+            'checksum' => $checksum,
+            'otp' => $otp
         ] , 200);
 
     }
@@ -319,9 +322,13 @@ class RefereeAuthController extends Controller
 
             $checksum = $this->generateOTP($referee);
 
+            // should remove after testing phase
+            $otp = RefereeOtp::where('checksum' , $checksum)->first();
+
             return response()->json([
                 'message' => 'Logged in successfully!',
-                'checksum' => $checksum
+                'checksum' => $checksum,
+                'otp' => $otp
             ] , 200);
 
         }else{
