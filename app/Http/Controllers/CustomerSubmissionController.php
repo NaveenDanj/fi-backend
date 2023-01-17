@@ -62,7 +62,7 @@ class CustomerSubmissionController extends Controller
 
     public function getMySubmissions(Request $request){
 
-        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->paginate(15);
+        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->paginate(15);
 
         return response()->json([
             'submissions' => $my_submissions
