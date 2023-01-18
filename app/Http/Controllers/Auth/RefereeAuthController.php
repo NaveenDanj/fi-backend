@@ -61,6 +61,12 @@ class RefereeAuthController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        // add referee wallet
+        RefereeWallet::create([
+            'userId' => $referee_user->id,
+            'balance' => 0,
+        ]);
+
         if(Auth::guard('referee')->attempt(['email' => $request->email, 'password' => $request->password])){
 
             $referee = Auth::guard('referee')->user();
@@ -247,11 +253,6 @@ class RefereeAuthController extends Controller
 
         RefereeOtp::where('userId' , $user->id)->delete();
 
-        // add referee wallet
-        RefereeWallet::create([
-            'userId' => $user->id,
-            'balance' => 0,
-        ]);
 
         return response()->json([
             'message' => 'OTP verified successfully!'
