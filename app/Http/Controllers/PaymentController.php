@@ -249,14 +249,14 @@ class PaymentController extends Controller
         if($wallet){
 
             return response()->json([
-                'wallet_balance' => null,
+                'wallet_balance' => $wallet->balance,
                 'payments' => $payments
             ]);
 
         }else{
 
             return response()->json([
-                'wallet_balance' => $wallet->balance,
+                'wallet_balance' => null,
                 'payments' => $payments
             ]);
 
