@@ -15,6 +15,8 @@ use App\Models\RefereeWallet;
 use DateTime;
 use Auth;
 use SMSGlobal\Credentials;
+use Twilio\Rest\Client;
+
 
 
 class RefereeAuthController extends Controller
@@ -665,17 +667,41 @@ class RefereeAuthController extends Controller
 
     }
 
-
     private function handleSendSMS($message , $user){
-        Credentials::set( '2875a9270fb49d070aa8bba99a0a97d4' , '862b3055cb08bde3c7f280b8a1e8a3e5'); // env('SMS_GLOBAL_API_KEY')  env('SMS_GLOBAL_SECRET_KEY')
-        $otp = new \SMSGlobal\Resource\Sms();
-
         try {
-            $response = $otp->sendToOne( $user->contact , $message.' is your SMSGlobal verification code.');
+            $msg = 'Your FINWIN verification code is ' . $message;
+            $response = $this->sendSMSService($msg , $user->contact);
             return $response;
         } catch (\Exception $e) {
             return false;
         }
     }
+
+    public function testSMS(Request $request){
+        $user = Referee::where('email' , 'naveenhettiwaththa@gmail.com')->first();
+        $res = $this->handleSendSMS('0011' , $user);
+        return response()->json([
+            'response' => $res
+        ]);
+    }
+
+    public function sendSMSService($msg , $contact){
+
+        $sid    = env('TWILIO_SID');
+        $token  = env('TWILIO_TOKEN');
+        $client  = new Client($sid, $token);
+
+        $message = $client->messages->create(
+            $contact, // Text this number
+            [
+              'messagingServiceSid' => 'MG91e3a30a30d522b9a2e33424e7880151',
+              'body' => $msg
+            ]
+        );
+
+        return $message;
+
+    }
+
 
 }

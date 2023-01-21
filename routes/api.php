@@ -90,3 +90,7 @@ Route::prefix('payment')->group(function(){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/payment-get-request-by-code' , [PaymentController::class , 'getPaymentByCode'] );
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/payment-get-referee-payments' , [PaymentController::class , 'getRefereePaymentList'] );
 });
+
+Route::prefix('test')->group(function(){
+    Route::get('/send-sms' , [RefereeAuthController::class , 'testSMS']);
+});
