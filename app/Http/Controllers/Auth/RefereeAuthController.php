@@ -673,7 +673,6 @@ class RefereeAuthController extends Controller
             $response = $this->sendSMSService($msg , $user->contact);
             return $response;
         } catch (\Exception $e) {
-            dd($e);
             return false;
         }
     }
