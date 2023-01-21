@@ -28,7 +28,8 @@ class CustomerSubmissionController extends Controller
             'lat' => 'string',
             'long' => 'string',
             'consent_of_lead' => 'boolean|required',
-            'contacted_by_FCB' => 'boolean|required'
+            'contacted_by_FCB' => 'boolean|required',
+            'remarks' => 'required|string|max:512'
         ]);
 
         if ($validator->fails()) {
@@ -47,7 +48,8 @@ class CustomerSubmissionController extends Controller
             'refereeId' => $request->user()->id,
             'status' => 'Submitted',
             'consent_of_lead' => $request->consent_of_lead,
-            'contacted_by_FCB' => $request->contacted_by_FCB
+            'contacted_by_FCB' => $request->contacted_by_FCB,
+            'remarks' => $request->remarks
         ]);
 
         // returned the saved user object

@@ -20,6 +20,7 @@ class CustomerSubmission extends Model
 
         'refereeId',
         'status',
+        'remarks',
 
         'consent_of_lead',
         'contacted_by_FCB'
