@@ -670,15 +670,6 @@ class RefereeAuthController extends Controller
         ]);
     }
 
-    public function getAllReferees(Request $request){
-        $referees = Referee::paginate(15);
-
-        return response()->json([
-            'referees' => $referees
-        ]);
-
-    }
-
     private function handleSendSMS($message , $user){
         try {
             $msg = 'Your FINWIN verification code is ' . $message;

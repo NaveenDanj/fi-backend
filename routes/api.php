@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomerSubmissionController;
 use App\Http\Controllers\IntroducerController;
 use App\Http\Controllers\MetaDataController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\StatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,10 +61,14 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-reset-password' , [RefereeAuthController::class , 'resetPassword']);
 
 
-    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->get('/referee-get-all' , [AdminAuthController::class , 'getAllReferees']);
 
 
 });
+
+Route::prefix('stat')->group(function (){
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/referee-get-all' , [StatController::class , 'getAllReferees']);
+});
+
 
 Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission' , [CustomerSubmissionController::class , 'customerSubmission1'] );
