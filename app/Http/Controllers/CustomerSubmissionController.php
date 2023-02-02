@@ -29,7 +29,7 @@ class CustomerSubmissionController extends Controller
             'long' => 'string',
             'consent_of_lead' => 'boolean|required',
             'contacted_by_FCB' => 'boolean|required',
-            'remarks' => 'required|string|max:512'
+            'remarks' => 'string|max:512'
         ]);
 
         if ($validator->fails()) {
