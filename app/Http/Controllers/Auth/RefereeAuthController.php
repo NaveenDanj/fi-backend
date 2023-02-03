@@ -604,7 +604,7 @@ class RefereeAuthController extends Controller
         ]);
     }
 
-    public function resetPassword(){
+    public function resetPassword(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'oldPassword' => 'required|string',

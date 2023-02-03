@@ -58,10 +58,7 @@ Route::prefix('auth')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-me' , [RefereeAuthController::class , 'refereeMe']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-edit-profile' , [RefereeAuthController::class , 'editRefereeProfile']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-get-unread-notifications' , [RefereeAuthController::class , 'getUnreadNotifications']);
-    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/referee-reset-password' , [RefereeAuthController::class , 'resetPassword']);
-
-
-
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-reset-password' , [RefereeAuthController::class , 'resetPassword']);
 
 });
 
