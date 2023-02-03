@@ -67,6 +67,7 @@ Route::prefix('stat')->group(function (){
 });
 
 
+
 Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-customer-submission' , [CustomerSubmissionController::class , 'customerSubmission1'] );
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/view-my-submissions' , [CustomerSubmissionController::class , 'getMySubmissions'] );
@@ -83,6 +84,8 @@ Route::prefix('introducer')->group(function (){
 
 Route::prefix('meta')->group(function (){
     Route::get('/load-meta-data' , [MetaDataController::class , 'loadMetaData'] );
+    Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/create-bug-report' , [MetaDataController::class , 'createBugReport'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->get('/get-bug-reports' , [MetaDataController::class , 'getBugReports'] );
 });
 
 Route::prefix('payment')->group(function(){
