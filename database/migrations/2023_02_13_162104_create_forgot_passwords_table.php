@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('forgot_passwords', function (Blueprint $table) {
             $table->id();
             $table->integer('otp');
-            $table->string('token' , 1024)->unique();
+            $table->string('token')->unique();
             $table->bigInteger('refereeId');
             $table->timestamps();
         });
