@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use App\Traits\Upload;
 use App\Models\Referee;
 use App\Models\RefereeOtp;
+use App\Models\forgotPassword;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Carbon;
@@ -663,6 +664,20 @@ class RefereeAuthController extends Controller
         return $checksum;
     }
 
+    private function generateForgotPasswordOTP($user){
+        $otp = mt_rand(1000 , 9999);
+        $token = Str::uuid()->toString();
+
+        $fp = forgotPassword::create([
+            'otp' => $otp,
+            'token' => $token,
+            'refereeId' => $user->id
+        ]);
+        $res = $this->handleSendSMS($otp , $user);
+
+        return $fp;
+    }
+
     public function refereeMe(Request $request){
         $user = $request->user();
         return response()->json([
@@ -704,6 +719,37 @@ class RefereeAuthController extends Controller
         );
 
         return $message;
+
+    }
+
+    public function forgotPasswordSendOTP(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'email' =>  'required|string|email',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $check_email = Referee::where('email' , $request->email)->first();
+
+        if(!$check_email){
+            return response()->json([
+                'message' => 'referee account not found!'
+            ] , 401);
+        }
+
+        // delete previous forgot password tokens
+        forgotPassword::where('refereeId' , $check_email->id)->delete();
+
+        // generate otp
+        $res = $this->generateForgotPasswordOTP($check_email);
+
+        return response()->json([
+            'message' => 'Forgot password otp sent!',
+            'referee' => $check_email
+        ]);
 
     }
 

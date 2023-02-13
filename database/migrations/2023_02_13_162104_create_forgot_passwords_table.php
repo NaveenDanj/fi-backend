@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('reset_passwords', function (Blueprint $table) {
+        Schema::create('forgot_passwords', function (Blueprint $table) {
             $table->id();
+            $table->integer('otp');
+            $table->string('token' , 1024)->unique();
+            $table->bigInteger('refereeId');
             $table->timestamps();
         });
     }
@@ -26,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reset_passwords');
+        Schema::dropIfExists('forgot_passwords');
     }
 };
