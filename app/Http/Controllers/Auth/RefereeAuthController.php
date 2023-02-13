@@ -737,7 +737,7 @@ class RefereeAuthController extends Controller
         if(!$check_email){
             return response()->json([
                 'message' => 'referee account not found!'
-            ] , 401);
+            ] , 404);
         }
 
         // delete previous forgot password tokens
@@ -753,5 +753,91 @@ class RefereeAuthController extends Controller
 
     }
 
+    public function verifyForgotPasswordOTP(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'otp' =>  'required|numeric',
+            'email' => 'required|email'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $check_email = Referee::where('email' , $request->email)->first();
+
+        if(!$check_email){
+            return response()->json([
+                'message' => 'referee account not found!'
+            ] , 404);
+        }
+
+        $otp_check = forgotPassword::where('refereeId' , $check_email->id)->where('otp' , $request->otp)->first();
+
+        if(!$otp_check){
+            return response()->json([
+                'message' => 'Forgot password request not found!'
+            ] , 404);
+        }
+
+        return response()->json([
+            'message' => 'Otp verified successfully!',
+            'token' => $otp_check->token
+        ]);
+
+    }
+
+    public function forgotPasswordAddPassword(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'otp' =>  'required|numeric',
+            'token' => 'required|string',
+            'password' => 'required|string|min:6',
+            'retypePassword' => 'required|string|min:6'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        if($request->password != $request->retypePassword){
+            return response()->json([
+                'message' => 'Password missmatch!'
+            ] , 400);
+        }
+
+        $pwInstance = forgotPassword::where('token' , $request->token)->first();
+
+        if(!$pwInstance){
+            return response()->json([
+                'message' => 'Forgot password request not found!'
+            ] , 403);
+        }
+
+        if($pwInstance->otp != $request->otp){
+            return response()->json([
+                'message' => 'Otp mismatch'
+            ] , 401);
+        }
+
+        // update password
+        $referee = Referee::where('id' , $pwInstance->refereeId)->first();
+
+        if(!$referee){
+            return response()->json([
+                'message' => 'User not found!'
+            ] , 401);
+        }
+
+        $referee->password = Hash::make($request->password);
+        $referee->update();
+
+        $pwInstance->delete();
+
+        return response()->json([
+            'message' => 'Password updated'
+        ]);
+
+    }
 
 }

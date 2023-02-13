@@ -51,6 +51,11 @@ Route::prefix('auth')->group(function (){
     Route::post('/referee-login' , [RefereeAuthController::class , 'refereeLogin']);
     Route::post('/referee-login-verify-otp' , [RefereeAuthController::class , 'verifyOTPLogin']);
 
+    // forgot password
+    Route::post('/referee-forgot-password-send-otp' , [RefereeAuthController::class , 'forgotPasswordSendOTP']);
+    Route::post('/referee-forgot-password-verify-otp' , [RefereeAuthController::class , 'verifyForgotPasswordOTP']);
+    Route::post('/referee-forgot-password-update-password' , [RefereeAuthController::class , 'forgotPasswordAddPassword']);
+
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-upload-verification-image' , [RefereeAuthController::class , 'updateRefereeVerficationImages']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-update-bank-details' , [RefereeAuthController::class , 'updateRefereeBankDetails']);
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->post('/referee-upload-profile-pic' , [RefereeAuthController::class , 'uploadRefereeProfilePic']);
