@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name' , 100);
-            $table->string('company' , 20);
+            $table->string('company' , 512);
             $table->string('contact' , 255)->unique();
             $table->string('email' , 512)->unique()->nullable();
             $table->decimal('salary' , 19,2)->nullable();

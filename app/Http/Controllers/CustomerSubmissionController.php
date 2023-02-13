@@ -21,7 +21,7 @@ class CustomerSubmissionController extends Controller
     public function customerSubmission1(Request $request){
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'name' => 'required|string|max:100',
-            'company' =>  'string|max:20',
+            'company' =>  'string|max:512',
             'contact' =>  'required|string|unique:customer_submissions',
             'email' =>  'string|email|unique:customer_submissions',
             'salary' =>  'required|numeric',
