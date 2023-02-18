@@ -16,6 +16,7 @@ use App\Models\RefereeWallet;
 use DateTime;
 use Auth;
 use SMSGlobal\Credentials;
+use SMSGlobal\Resource\Sms;
 use Twilio\Rest\Client;
 
 
@@ -320,7 +321,7 @@ class RefereeAuthController extends Controller
 
             $referee = Auth::guard('referee')->user();
 
-            // $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
+            $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
             // // return the token
 
             $checksum = $this->generateOTP($referee);
@@ -331,7 +332,9 @@ class RefereeAuthController extends Controller
             return response()->json([
                 'message' => 'Logged in successfully!',
                 'checksum' => $checksum,
-                'otp' => $otp
+                'token' => $token,
+                'referee' => $referee
+                // 'otp' => $otp
             ] , 200);
 
         }else{
@@ -705,20 +708,35 @@ class RefereeAuthController extends Controller
 
     public function sendSMSService($msg , $contact){
 
-        $sid    = env('TWILIO_SID');
-        $token  = env('TWILIO_TOKEN');
-        $client  = new Client($sid, $token);
+        // $sid    = env('TWILIO_SID');
+        // $token  = env('TWILIO_TOKEN');
+        // $client  = new Client($sid, $token);
 
-        $message = $client->messages->create(
-            $contact, // Text this number
-            [
-            //   'messagingServiceSid' => 'MG91e3a30a30d522b9a2e33424e7880151',
-              'body' => $msg,
-              'from' => '+18316031423'
-            ]
-        );
+        // $message = $client->messages->create(
+        //     $contact, // Text this number
+        //     [
+        //     //   'messagingServiceSid' => 'MG91e3a30a30d522b9a2e33424e7880151',
+        //       'body' => $msg,
+        //       'from' => '+18316031423'
+        //     ]
+        // );
 
-        return $message;
+        // return $message;
+
+
+        \SMSGlobal\Credentials::set(env('SMS_GLOBAL_API_KEY'), env('SMS_GLOBAL_SECRET_KEY'));
+
+        $sms = new \SMSGlobal\Resource\Sms();
+
+        try {
+            $response = $sms->sendToOne($contact, $msg , 'FCB');
+            // print_r($response['messages']);
+            return $response;
+        } catch (\Exception $e) {
+            // echo $e->getMessage();
+            return $e->getMessage();
+        }
+
 
     }
 
