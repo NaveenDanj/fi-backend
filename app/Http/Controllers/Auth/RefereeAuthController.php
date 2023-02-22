@@ -324,7 +324,7 @@ class RefereeAuthController extends Controller
             $token = $referee->createToken('MyApp' , ['referee'])->plainTextToken;
             // // return the token
 
-            $checksum = $this->generateOTP($referee);
+            $checksum = $this->generateOTPWithoutSMS($referee);
 
             // should remove after testing phase
             $otp = RefereeOtp::where('checksum' , $checksum)->first();
@@ -662,6 +662,32 @@ class RefereeAuthController extends Controller
 
         // send
         $res = $this->handleSendSMS($otp , $user);
+        // dd($res);
+
+        return $checksum;
+    }
+
+    private function generateOTPWithoutSMS($user){
+        // genereate otp and send to user
+        $otp = mt_rand(1000 , 9999);
+        $timestamp = microtime(true) * 1000;
+
+
+        $expire_timestamp = $timestamp + 1000 * 60 * 1;
+        $expire_date = Carbon::createFromTimestampMs($expire_timestamp)->format('Y-m-d H:i:s.u');
+
+        $checksum = Str::uuid()->toString();
+
+        RefereeOtp::create([
+            'userId' => $user->id,
+            'otp' => $otp,
+            'expireTime' => $expire_date,
+            'blocked' => false,
+            'checksum' => $checksum
+        ]);
+
+        // send
+        // $res = $this->handleSendSMS($otp , $user);
         // dd($res);
 
         return $checksum;
