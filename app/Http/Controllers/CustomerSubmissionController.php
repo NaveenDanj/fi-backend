@@ -106,7 +106,7 @@ class CustomerSubmissionController extends Controller
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'submission_id' => 'required|numeric',
-            'status' => 'required|in:Submitted,Contacted,AECB Checked,Pending,Approved,Delivered,Activated,Unreachable'
+            'status' => 'required|in:Submitted,Contacted,AECB Checked,Documents under process,Approved,Delivered,Activated,Unreachable,Not Interested,Ineligible'
         ]);
 
         if ($validator->fails()) {
