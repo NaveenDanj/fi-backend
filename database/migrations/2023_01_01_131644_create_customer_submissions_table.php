@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('lat', 50)->nullable();
             $table->string('long', 50)->nullable();
             $table->bigInteger('refereeId');
-            $table->string('status', 20)->default('Submitted');
+            $table->string('status', 255)->default('Submitted');
         });
     }
 
