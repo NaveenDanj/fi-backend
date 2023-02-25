@@ -76,6 +76,47 @@ class CustomerSubmissionController extends Controller
 
         $my_submissions = CustomerSubmission::paginate(15);
 
+        foreach($my_submissions as $submission){
+            $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
+            $submission->referee = $referee;
+            $submission->introducer = Admin::where('id' , $referee->introducerId)->first();
+        }
+
+        return response()->json([
+            'submissions' => $my_submissions
+        ]);
+
+    }
+
+    public function getAllSubmissionsFilter(Request $request){
+
+        $my_submissions = null;
+
+        if($request->type == 'Referee'){
+            $my_submissions = CustomerSubmission::where('refereeId' , $request->id)->paginate(15);
+        }else{
+
+            // all referees belongs to introducer
+            $_referees = Referee::where('introducerId' , $request->id)->get();
+
+            $referee = [];
+
+            foreach($_referees as $ref){
+                $referee[] = $ref->id;
+            }
+
+            $my_submissions = CustomerSubmission::whereIn('refereeId' , $referee)->paginate(15);
+
+        }
+
+        // $my_submissions = CustomerSubmission::paginate(15);
+
+        foreach($my_submissions as $submission){
+            $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
+            $submission->referee = $referee;
+            $submission->introducer = Admin::where('id' , $referee->introducerId)->first();
+        }
+
         return response()->json([
             'submissions' => $my_submissions
         ]);
