@@ -24,6 +24,10 @@ class StatController extends Controller
                 $referees = Referee::where('introducerId' , $request->introducer)->paginate(15);
             }else{
                 $referees = Referee::paginate(15);
+                  foreach($referees as $referee){
+                    $introducer =  Admin::where( 'id' ,  $referee->introducerId)->first();
+                    $referee->introducer = $introducer;
+                }
             }
 
         }else{
