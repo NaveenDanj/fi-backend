@@ -51,6 +51,7 @@ Route::prefix('auth')->group(function (){
     Route::post('/referee-login' , [RefereeAuthController::class , 'refereeLogin']);
     Route::post('/referee-login-verify-otp' , [RefereeAuthController::class , 'verifyOTPLogin']);
 
+
     // forgot password
     Route::post('/referee-forgot-password-send-otp' , [RefereeAuthController::class , 'forgotPasswordSendOTP']);
     Route::post('/referee-forgot-password-verify-otp' , [RefereeAuthController::class , 'verifyForgotPasswordOTP']);
@@ -101,6 +102,11 @@ Route::prefix('payment')->group(function(){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/payment-get-request-by-code' , [PaymentController::class , 'getPaymentByCode'] );
     Route::middleware(['auth:sanctum' , 'abilities:referee' , 'refereeVerified'])->get('/payment-get-referee-payments' , [PaymentController::class , 'getRefereePaymentList'] );
 });
+
+Route::prefix('refree')->group(function(){
+    Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/update-introducer' , [RefereeAuthController::class , 'updateRefereeIntroducer']);
+});
+
 
 Route::prefix('test')->group(function(){
     Route::get('/send-sms' , [RefereeAuthController::class , 'testSMS']);

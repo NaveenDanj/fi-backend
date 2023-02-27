@@ -820,12 +820,12 @@ class RefereeAuthController extends Controller
 
         if(!$otp_check){
             return response()->json([
-                'message' => 'Forgot password request not found!'
+                'message' => 'OTP Verification failed'
             ] , 404);
         }
 
         return response()->json([
-            'message' => 'Otp verified successfully!',
+            'message' => 'Otp verified successfully',
             'token' => $otp_check->token
         ]);
 
@@ -854,7 +854,7 @@ class RefereeAuthController extends Controller
 
         if(!$pwInstance){
             return response()->json([
-                'message' => 'Forgot password request not found!'
+                'message' => 'OTP Verification failed'
             ] , 403);
         }
 
@@ -882,6 +882,26 @@ class RefereeAuthController extends Controller
             'message' => 'Password updated'
         ]);
 
+    }
+
+
+    public function updateRefereeIntroducer(Request $request){
+
+
+        $check_referee = Referee::where('id' , $request->refereeId)->first();
+
+        if(!$check_referee){
+            return response()->json([
+                'message' => 'Referee not found!'
+            ] , 401);
+        }
+
+        $check_referee->introducerId = $request->newIntroducerId;
+        $check_referee->update();
+
+        return response()->json([
+            'message' => 'Introducer updated'
+        ],200);
     }
 
 }
