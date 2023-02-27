@@ -207,13 +207,21 @@ class PaymentController extends Controller
     }
 
     public function getAllPayments(Request $request){
+        $payments = [];
         $payments = Payment::orderBy('id', 'desc')->paginate(15);
+
+        foreach($payments as $payment){
+            $introducer =  Referee::where( 'id' ,  $payment->referee_id)->first();
+            $payment->referee = $introducer;
+        }
 
         return response()->json([
             'payments' => $payments
         ]);
 
     }
+
+
 
     public function getPaymentByCode(Request $request){
 
