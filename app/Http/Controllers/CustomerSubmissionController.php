@@ -123,6 +123,24 @@ class CustomerSubmissionController extends Controller
 
     }
 
+
+    public function getAllSubmissionsCalendar(Request $request){
+
+        $my_submissions = CustomerSubmission::paginate();
+
+        foreach($my_submissions as $submission){
+            $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
+            $submission->referee = $referee;
+            $submission->introducer = Admin::where('id' , $referee->introducerId)->first();
+        }
+
+        return response()->json([
+            'submissions' => $my_submissions
+        ]);
+    }
+
+    
+
     public function getSubmissionForIntroducer(Request $request){
 
 
