@@ -23,8 +23,8 @@ class CustomerSubmission extends Model
         'remarks',
 
         'consent_of_lead',
-        'contacted_by_FCB'
-
+        'contacted_by_FCB',
+        'statusRemarks'
 
     ];
 
