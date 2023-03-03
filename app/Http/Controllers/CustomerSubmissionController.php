@@ -238,10 +238,86 @@ class CustomerSubmissionController extends Controller
 
         }
 
+    }
 
 
+
+    public function updateSubmissionStateRemark(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'submission_id' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $submission = CustomerSubmission::where('id' , $request->submission_id)->first();
+
+        if(!$submission){
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        // check if admin is whether a admin or introducer
+        $introducer_user = $request->user();
+
+
+        if($introducer_user->role == 'admin'){
+
+            $submission->statusRemarks = $request->statusRemarks;
+            $submission->update();
+
+            $this->handleRefereeCommision($submission);
+
+            // notify the referee
+            $referee = Referee::where('id' , $submission->refereeId)->first();
+            $notification_data = "Submission Remark Updated";
+            Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
+
+            return response()->json([
+                'message' => 'Submission Remark Update successfully',
+                'submission' => $submission
+            ]);
+
+        }else{
+
+            $belongs_to = $this->getSubmissionIntroducer($submission->id);
+
+
+            if($belongs_to->id != $introducer_user->id){
+
+                return response()->json([
+                    'message' => 'Unauthorized!',
+                ] , 403);
+
+            }else{
+
+
+                $submission->statusRemarks = $request->statusRemarks;
+                $submission->update();
+
+                $this->handleRefereeCommision($submission);
+
+                // notify the referee
+                $referee = Referee::where('id' , $submission->refereeId)->first();
+                $notification_data = "Submission Remark Updated";
+                Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
+
+
+                return response()->json([
+                    'message' => 'Submission Remark Update successfully',
+                    'submission' => $submission
+                ]);
+
+            }
+
+        }
 
     }
+
+
+
+
 
 
     private function checkSubmission($id){

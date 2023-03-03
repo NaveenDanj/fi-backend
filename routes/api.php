@@ -81,6 +81,7 @@ Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->get('/view-all-submissions-filter' , [CustomerSubmissionController::class , 'getAllSubmissionsFilter'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->get('/view-all-submissions-calendar' , [CustomerSubmissionController::class , 'getAllSubmissionsCalendar'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/update-submission-status' , [CustomerSubmissionController::class , 'updateSubmissionState'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/update-submission-status-remark' , [CustomerSubmissionController::class , 'updateSubmissionStateRemark'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/view-introducer-submissions' , [CustomerSubmissionController::class , 'getSubmissionForIntroducer'] );
 });
 
