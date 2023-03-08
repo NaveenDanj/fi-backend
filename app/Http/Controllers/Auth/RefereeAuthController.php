@@ -904,4 +904,31 @@ class RefereeAuthController extends Controller
         ],200);
     }
 
+
+    
+
+    public function updateRefereeFcmToken(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'fcmToken' => 'string',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $referee = $request->user();
+
+        $referee->fcm =  $request->fcmToken;
+        $referee->update();
+
+        return response()->json([
+            'message' => 'fcm updated'
+        ]);
+
+    }
+
+
+
 }

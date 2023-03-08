@@ -24,7 +24,8 @@ class Referee extends Authenticatable
         'verification_image_1',
         'verification_image_2',
         'introducerId',
-        'propic'
+        'propic',
+        'fcm'
     ];
 
     protected $hidden = [
