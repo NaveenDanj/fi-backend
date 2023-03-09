@@ -64,7 +64,7 @@ class CustomerSubmissionController extends Controller
 
     public function getMySubmissions(Request $request){
 
-        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->paginate(15);
+        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->get();
 
         return response()->json([
             'submissions' => $my_submissions
@@ -74,7 +74,7 @@ class CustomerSubmissionController extends Controller
 
     public function getAllSubmissions(Request $request){
 
-        $my_submissions = CustomerSubmission::paginate(15);
+        $my_submissions = CustomerSubmission::all();
 
         foreach($my_submissions as $submission){
             $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
@@ -93,7 +93,7 @@ class CustomerSubmissionController extends Controller
         $my_submissions = null;
 
         if($request->type == 'Referee'){
-            $my_submissions = CustomerSubmission::where('refereeId' , $request->id)->paginate(15);
+            $my_submissions = CustomerSubmission::where('refereeId' , $request->id)->get();
         }else{
 
             // all referees belongs to introducer
@@ -105,7 +105,7 @@ class CustomerSubmissionController extends Controller
                 $referee[] = $ref->id;
             }
 
-            $my_submissions = CustomerSubmission::whereIn('refereeId' , $referee)->paginate(15);
+            $my_submissions = CustomerSubmission::whereIn('refereeId' , $referee)->get();
 
         }
 
