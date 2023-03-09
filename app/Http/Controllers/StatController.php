@@ -17,13 +17,13 @@ class StatController extends Controller
         $user = $request->user();
 
         $referees = [];
-
+        error_log($request->introducer);
         if($user->role == 'admin'){
 
             if($request->introducer){
-                $referees = Referee::where('introducerId' , $request->introducer)->all();
+                $referees = Referee::where('introducerId' , $request->introducer)->paginate(50);
             }else{
-                
+
                 $referees = Referee::all();
                   foreach($referees as $referee){
                     $introducer =  Admin::where( 'id' ,  $referee->introducerId)->first();
