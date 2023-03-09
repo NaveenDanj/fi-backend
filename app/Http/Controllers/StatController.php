@@ -21,9 +21,9 @@ class StatController extends Controller
         if($user->role == 'admin'){
 
             if($request->introducer){
-                $referees = Referee::where('introducerId' , $request->introducer)->paginate(15);
+                $referees = Referee::where('introducerId' , $request->introducer)->all();
             }else{
-                $referees = Referee::paginate(15);
+                $referees = Referee::all();
                   foreach($referees as $referee){
                     $introducer =  Admin::where( 'id' ,  $referee->introducerId)->first();
                     $referee->introducer = $introducer;
@@ -31,7 +31,7 @@ class StatController extends Controller
             }  
 
         }else{
-            $referees = Referee::where('introducerId' , $user->id)->paginate(15);
+            $referees = Referee::where('introducerId' , $user->id)->all();
         }
 
         return response()->json([

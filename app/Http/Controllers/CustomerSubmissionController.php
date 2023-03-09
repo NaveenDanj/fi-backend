@@ -64,7 +64,7 @@ class CustomerSubmissionController extends Controller
 
     public function getMySubmissions(Request $request){
 
-        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->paginate(15);
+        $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->all();
 
         return response()->json([
             'submissions' => $my_submissions
@@ -74,7 +74,7 @@ class CustomerSubmissionController extends Controller
 
     public function getAllSubmissions(Request $request){
 
-        $my_submissions = CustomerSubmission::paginate(15);
+        $my_submissions = CustomerSubmission::all();
 
         foreach($my_submissions as $submission){
             $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
