@@ -23,6 +23,7 @@ class StatController extends Controller
             if($request->introducer){
                 $referees = Referee::where('introducerId' , $request->introducer)->all();
             }else{
+                
                 $referees = Referee::all();
                   foreach($referees as $referee){
                     $introducer =  Admin::where( 'id' ,  $referee->introducerId)->first();
