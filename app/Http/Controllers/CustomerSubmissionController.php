@@ -143,6 +143,7 @@ class CustomerSubmissionController extends Controller
 
     public function getSubmissionForIntroducer(Request $request){
 
+        $submissions = [];
 
         $introducer_user = $request->user();
 
@@ -153,6 +154,12 @@ class CustomerSubmissionController extends Controller
         }
 
         $submissions = $this->getSubmissionsBelongsToIntroducer($introducer_user->id);
+
+        foreach($submissions as $submission){
+            $referee =  Referee::where( 'id' ,  $submission->refereeId)->first();
+            $submission->referee = $referee;
+        }
+
 
         return response()->json([
             'submissions' => $submissions
