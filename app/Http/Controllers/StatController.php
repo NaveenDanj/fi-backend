@@ -63,8 +63,8 @@ class StatController extends Controller
         if($user->role == 'admin'){
 
             //  $referees = Referee::where('introducerId' , $request->introducer)->get();
-            $mytime = Carbon::now();
-            echo $mytime->toDateTimeString();
+            // $mytime = Carbon::now();
+            // echo $mytime->toDateTimeString();
             $introducer = Admin::all();
 
             $refereesCount = count(Referee::all());
@@ -85,10 +85,10 @@ class StatController extends Controller
                 ];
             }
 
+            // dd( Carbon::now()->subDays(10)->toDateTimeString() );
 
-            $todayReferees = Referee::where( 'created_at', '>', '2023-03-10 15:53:21')->get();
-            $lastTenDayReferees = count(Referee::where( 'created_at', '>', Carbon::now()->subDays(10))->get());
-            // $registeredRefereesDays = Carbon::parse(Referee::select('created_at'))->format('d/m/Y')->get();
+            $todayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
+            $lastTenDayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
 
         }else{
             $stats = Referee::where('introducerId' , $user->id)->get();
