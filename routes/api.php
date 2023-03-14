@@ -72,6 +72,7 @@ Route::prefix('auth')->group(function (){
 
 Route::prefix('stat')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/referee-get-all' , [StatController::class , 'getAllReferees']);
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/statistics' , [StatController::class , 'getStatistics']);
 });
 
 
