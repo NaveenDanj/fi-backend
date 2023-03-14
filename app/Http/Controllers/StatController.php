@@ -53,42 +53,57 @@ class StatController extends Controller
         $introducerCount = 0;
         $todayReferees = 0;
         $lastTenDayReferees = 0;
+        $lastThirtyDaysReferees = 0;
         $registeredRefereesDays = [];
         $introducerRefereeCount = [];
         $totalSubmissionCount = 0;
-        $refereeSubmissionCount = 0;
-        $introducerSubmissionCount = 0;
+        $refereeSubmissionCount = [];
+        $introducerSubmissionCount = [];
         $submissionStatusCount = [];
+
 
         if($user->role == 'admin'){
 
-            //  $referees = Referee::where('introducerId' , $request->introducer)->get();
-            // $mytime = Carbon::now();
-            // echo $mytime->toDateTimeString();
-            $introducer = Admin::all();
+            $introducer = Admin::select('id', 'fullname')->get();
+            $referee = Referee::select('id', 'fullname')->get();
+            $submission = CustomerSubmission::select('id', 'status','remarks','statusRemarks','created_at','updated_at',)->get();
 
-            $refereesCount = count(Referee::all());
-            $introducerCount= count(Admin::all());
-
-            $introducerRefereeCount = Referee::all()->groupBy('introducerId');
-            $introducerRefereeCount= $introducerRefereeCount->count();
-
-
-            $introducer_out_list = [];
+            $totalSubmissionCount = CustomerSubmission::all()->count();
+            $refereesCount = Referee::all()->count();
+            $introducerCount= Admin::all()->count();
 
             foreach($introducer as $admin){
 
                 $referee_count = Referee::where('introducerId' , $admin->id)->count();
-                $introducer_out_list[] = [
-                    "introducer" => $admin,
+                $introducerRefereeCount[] = [
+                    "introducer_id" => $admin->id,
+                    "introducer_id_name" => $admin->fullname,
                     "refereeCount" => $referee_count
                 ];
             }
 
-            // dd( Carbon::now()->subDays(10)->toDateTimeString() );
+            foreach($referee as $ref){
+                $submission_count = CustomerSubmission::where('refereeId' , $ref->id)->count();
+                $refereeSubmissionCount[] = [
+                    "ref_id" => $ref->id,
+                    "ref_name" => $ref->fullname,
+                    "submission_count" => $submission_count
+                ];
+            }
+
+
+            $registeredRefereesDays = Referee::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                         ->groupBy('date')
+                         ->get();
+
+            
+
+            $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count')->groupBy('status')->get();
 
             $todayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
             $lastTenDayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
+            $lastThirtyDaysReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
+
 
         }else{
             $stats = Referee::where('introducerId' , $user->id)->get();
@@ -98,10 +113,14 @@ class StatController extends Controller
             'refereesCount' => $refereesCount,
             'introducerCount' =>$introducerCount,
             'todayReferees' => $todayReferees,
+            'totalSubmissionCount'=> $totalSubmissionCount,
             'lastTenDayReferees' => $lastTenDayReferees,
+            'lastThirtyDaysReferees'=>$lastThirtyDaysReferees,
             'registeredRefereesDays' => $registeredRefereesDays,
+            'submissionStatusCount'=> $submissionStatusCount,
+            'refereeSubmissionCount'=>$refereeSubmissionCount,
+            'introducerSubmissionCount'=>$introducerSubmissionCount,
             'introducerRefereeCount'=> $introducerRefereeCount,
-            "introducerOutList" => $introducer_out_list
         ]);
 
     }
