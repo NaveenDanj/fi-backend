@@ -30,7 +30,7 @@ class StatController extends Controller
                     $introducer =  Admin::where( 'id' ,  $referee->introducerId)->first();
                     $referee->introducer = $introducer;
                 }
-            }  
+            }
 
         }else{
             $referees = Referee::where('introducerId' , $user->id)->get();
@@ -62,22 +62,33 @@ class StatController extends Controller
 
         if($user->role == 'admin'){
 
-              //  $referees = Referee::where('introducerId' , $request->introducer)->get();
-              $mytime = Carbon::now();
-              echo $mytime->toDateTimeString();
-              $introducer = Admin::all();
+            //  $referees = Referee::where('introducerId' , $request->introducer)->get();
+            $mytime = Carbon::now();
+            echo $mytime->toDateTimeString();
+            $introducer = Admin::all();
 
-              $refereesCount = count(Referee::all());
-              $introducerCount= count(Admin::all());
+            $refereesCount = count(Referee::all());
+            $introducerCount= count(Admin::all());
 
-             $introducerRefereeCount = Referee::all()->groupBy('introducerId');
-             $introducerRefereeCount= $introducerRefereeCount->count();
+            $introducerRefereeCount = Referee::all()->groupBy('introducerId');
+            $introducerRefereeCount= $introducerRefereeCount->count();
 
 
+            $introducer_out_list = [];
 
-              $todayReferees = Referee::where( 'created_at', '>', '2023-03-10 15:53:21')->get();
-              $lastTenDayReferees = count(Referee::where( 'created_at', '>', Carbon::now()->subDays(10))->get());
-             // $registeredRefereesDays = Carbon::parse(Referee::select('created_at'))->format('d/m/Y')->get();
+            foreach($introducer as $admin){
+
+                $referee_count = Referee::where('introducerId' , $admin->id)->count();
+                $introducer_out_list[] = [
+                    "introducer" => $admin,
+                    "refereeCount" => $referee_count
+                ];
+            }
+
+
+            $todayReferees = Referee::where( 'created_at', '>', '2023-03-10 15:53:21')->get();
+            $lastTenDayReferees = count(Referee::where( 'created_at', '>', Carbon::now()->subDays(10))->get());
+            // $registeredRefereesDays = Carbon::parse(Referee::select('created_at'))->format('d/m/Y')->get();
 
         }else{
             $stats = Referee::where('introducerId' , $user->id)->get();
@@ -89,7 +100,8 @@ class StatController extends Controller
             'todayReferees' => $todayReferees,
             'lastTenDayReferees' => $lastTenDayReferees,
             'registeredRefereesDays' => $registeredRefereesDays,
-            'introducerRefereeCount'=> $introducerRefereeCount
+            'introducerRefereeCount'=> $introducerRefereeCount,
+            "introducerOutList" => $introducer_out_list
         ]);
 
     }
