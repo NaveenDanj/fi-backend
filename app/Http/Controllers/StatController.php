@@ -89,23 +89,27 @@ class StatController extends Controller
                 return $b['refereeCount'] - $a['refereeCount'];
             });
 
-            $refereeSubmissionCount = [];
-foreach($referee as $ref) {
-    $submission_count = CustomerSubmission::where('refereeId', $ref->id)->count();
-    if($submission_count > 0) {
-        $refereeSubmissionCount[] = [
-            "ref_id" => $ref->id,
-            "ref_name" => $ref->fullname,
-            "ref_email" => $ref->email,
-            "ref_img" =>$ref->propic,
-            "submission_count" => $submission_count
-        ];
-    }
-}
 
-usort($refereeSubmissionCount, function($a, $b) {
-    return $b['submission_count'] - $a['submission_count'];
-});
+            $total_submissions = CustomerSubmission::count();
+
+            foreach($referee as $ref) {
+                $submission_count = CustomerSubmission::where('refereeId', $ref->id)->count();
+                if($submission_count > 0) {
+                    $percentage = round(($submission_count / $total_submissions) * 100, 2);
+                    $refereeSubmissionCount[] = [
+                        "ref_id" => $ref->id,
+                        "ref_name" => $ref->fullname,
+                        "ref_email" => $ref->email,
+                        "ref_img" => $ref->propic,
+                        "submission_count" => $submission_count,
+                        "submission_percentage" => $percentage
+                    ];
+                }
+            }
+            
+            usort($refereeSubmissionCount, function($a, $b) {
+                return $b['submission_count'] - $a['submission_count'];
+            });
 
 
 
