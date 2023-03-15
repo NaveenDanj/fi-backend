@@ -67,7 +67,9 @@ class CustomerSubmissionController extends Controller
         $my_submissions = CustomerSubmission::where('refereeId' , $request->user()->id)->orderBy('id', 'desc')->get();
 
         return response()->json([
-            'submissions' => $my_submissions
+            'submissions' => [
+                'data'->$my_submissions
+                ]
         ]);
 
     }
