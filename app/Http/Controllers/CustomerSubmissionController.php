@@ -68,8 +68,8 @@ class CustomerSubmissionController extends Controller
 
         return response()->json([
             'submissions' => [
-                'data'->$my_submissions
-                ]
+                'data' => $my_submissions
+            ]
         ]);
 
     }
