@@ -132,9 +132,9 @@ class StatController extends Controller
             $lastTenDayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
             $lastThirtyDaysReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
 
-            $todaySubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
-            $lastTenDaySubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
-            $lastThirtyDaysSubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
+            $todaySubmission = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
+            $lastTenDaySubmission = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
+            $lastThirtyDaysSubmission = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
 
 
         }else{
