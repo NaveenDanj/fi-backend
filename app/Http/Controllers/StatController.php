@@ -64,13 +64,15 @@ class StatController extends Controller
 
         if($user->role == 'admin'){
 
-            $introducer = Admin::select('id', 'fullname','email')->get();
+            $introducer = Admin::select('id', 'fullname', 'email')
+            ->where('role', 'introducer')
+            ->get();
             $referee = Referee::select('id', 'fullname','email','propic')->get();
             $submission = CustomerSubmission::select('id', 'status','remarks','statusRemarks','created_at','updated_at',)->get();
 
             $totalSubmissionCount = CustomerSubmission::all()->count();
             $refereesCount = Referee::all()->count();
-            $introducerCount= Admin::all()->count();
+            $introducerCount = Admin::where('role', 'introducer')->count();
 
             foreach($introducer as $admin) {
                 $referee_count = Referee::where('introducerId', $admin->id)->count();
