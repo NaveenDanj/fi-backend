@@ -63,6 +63,7 @@ class StatController extends Controller
         $refereeSubmissionCount = [];
         $introducerSubmissionCount = [];
         $submissionStatusCount = [];
+        $daySubmissionsCount=[];
 
 
         if($user->role == 'admin'){
@@ -121,6 +122,10 @@ class StatController extends Controller
             ->groupBy('date')
             ->get();
 
+            $daySubmissionsCount = CustomerSubmission::selectRaw('DATE(created_at) as date, COUNT(*) as count, (COUNT(*) * 100 / sum(COUNT(*)) over ()) as percentage')
+            ->groupBy('date')
+            ->get();
+
             
 
           //  $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count')->groupBy('status')->get();
@@ -156,6 +161,7 @@ class StatController extends Controller
             'refereeSubmissionCount'=>$refereeSubmissionCount,
             'introducerSubmissionCount'=>$introducerSubmissionCount,
             'introducerRefereeCount'=> $introducerRefereeCount,
+            'daySubmissionsCount' => $daySubmissionsCount,
         ]);
 
     }
