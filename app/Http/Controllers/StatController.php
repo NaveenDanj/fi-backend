@@ -64,41 +64,60 @@ class StatController extends Controller
 
         if($user->role == 'admin'){
 
-            $introducer = Admin::select('id', 'fullname')->get();
-            $referee = Referee::select('id', 'fullname')->get();
+            $introducer = Admin::select('id', 'fullname','email')->get();
+            $referee = Referee::select('id', 'fullname','email','propic')->get();
             $submission = CustomerSubmission::select('id', 'status','remarks','statusRemarks','created_at','updated_at',)->get();
 
             $totalSubmissionCount = CustomerSubmission::all()->count();
             $refereesCount = Referee::all()->count();
             $introducerCount= Admin::all()->count();
 
-            foreach($introducer as $admin){
-
-                $referee_count = Referee::where('introducerId' , $admin->id)->count();
+            foreach($introducer as $admin) {
+                $referee_count = Referee::where('introducerId', $admin->id)->count();
+            
                 $introducerRefereeCount[] = [
                     "introducer_id" => $admin->id,
-                    "introducer_id_name" => $admin->fullname,
+                    "introducer_name" => $admin->fullname,
+                    "introducer_email" => $admin->email,
                     "refereeCount" => $referee_count
                 ];
             }
+            
+            usort($introducerRefereeCount, function($a, $b) {
+                return $b['refereeCount'] - $a['refereeCount'];
+            });
 
-            foreach($referee as $ref){
-                $submission_count = CustomerSubmission::where('refereeId' , $ref->id)->count();
-                $refereeSubmissionCount[] = [
-                    "ref_id" => $ref->id,
-                    "ref_name" => $ref->fullname,
-                    "submission_count" => $submission_count
-                ];
-            }
+            $refereeSubmissionCount = [];
+foreach($referee as $ref) {
+    $submission_count = CustomerSubmission::where('refereeId', $ref->id)->count();
+    if($submission_count > 0) {
+        $refereeSubmissionCount[] = [
+            "ref_id" => $ref->id,
+            "ref_name" => $ref->fullname,
+            "ref_email" => $ref->email,
+            "ref_img" =>$ref->propic,
+            "submission_count" => $submission_count
+        ];
+    }
+}
+
+usort($refereeSubmissionCount, function($a, $b) {
+    return $b['submission_count'] - $a['submission_count'];
+});
 
 
-            $registeredRefereesDays = Referee::selectRaw('DATE(created_at) as date, COUNT(*) as count')
-                         ->groupBy('date')
-                         ->get();
+
+
+            $registeredRefereesDays = Referee::selectRaw('DATE(created_at) as date, COUNT(*) as count, (COUNT(*) * 100 / sum(COUNT(*)) over ()) as percentage')
+            ->groupBy('date')
+            ->get();
 
             
 
-            $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count')->groupBy('status')->get();
+          //  $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count')->groupBy('status')->get();
+            $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count, (count(*) * 100 / sum(count(*)) over ()) as percentage')
+                                ->groupBy('status')
+                                ->get();
 
             $todayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
             $lastTenDayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
