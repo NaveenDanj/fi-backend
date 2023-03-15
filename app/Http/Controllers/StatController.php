@@ -54,6 +54,9 @@ class StatController extends Controller
         $todayReferees = 0;
         $lastTenDayReferees = 0;
         $lastThirtyDaysReferees = 0;
+        $todaySubmission = 0;
+        $lastTenDaySubmission = 0;
+        $lastThirtyDaysSubmission = 0;
         $registeredRefereesDays = [];
         $introducerRefereeCount = [];
         $totalSubmissionCount = 0;
@@ -129,6 +132,10 @@ class StatController extends Controller
             $lastTenDayReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
             $lastThirtyDaysReferees = Referee::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
 
+            $todaySubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())->count();
+            $lastTenDaySubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(10)->toDateTimeString() )->count();
+            $lastThirtyDaysSubmissions = CustomerSubmission::where( 'created_at', '>', Carbon::now()->subDays(30)->toDateTimeString() )->count();
+
 
         }else{
             $stats = Referee::where('introducerId' , $user->id)->get();
@@ -140,6 +147,9 @@ class StatController extends Controller
             'todayReferees' => $todayReferees,
             'totalSubmissionCount'=> $totalSubmissionCount,
             'lastTenDayReferees' => $lastTenDayReferees,
+            'todaySubmission' =>$todaySubmission,
+            'lastTenDaySubmission'=> $lastTenDaySubmission,
+            'lastThirtyDaysSubmission'=> $lastThirtyDaysSubmission,
             'lastThirtyDaysReferees'=>$lastThirtyDaysReferees,
             'registeredRefereesDays' => $registeredRefereesDays,
             'submissionStatusCount'=> $submissionStatusCount,
