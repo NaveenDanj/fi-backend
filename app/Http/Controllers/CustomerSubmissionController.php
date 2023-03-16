@@ -207,7 +207,7 @@ class CustomerSubmissionController extends Controller
             $referee = Referee::where('id' , $submission->refereeId)->first();
             $notification_data = "Submission status has been changed!";
             Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
-
+            $res = $this->handlePushNotificationSend($referee,$submission);
             return response()->json([
                 'message' => 'submission status updated successfully',
                 'submission' => $submission
@@ -236,7 +236,7 @@ class CustomerSubmissionController extends Controller
                 $referee = Referee::where('id' , $submission->refereeId)->first();
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
-                $res = $this->handlePushNotificationSend($referee,$submission);
+                
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
@@ -251,8 +251,8 @@ class CustomerSubmissionController extends Controller
 
     public function handlePushNotificationSend($referee,$submission){
         try {
-            $title = 'Submission status changed';
-            $description = 'Your submission status has been changed';
+            $title = 'Your submission `'.$submission->name.'` '.$submission->status;
+            $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
             $response = $this->sendPushMessage($title,$description,$referee->fcm);
             return $response;
         } catch (\Exception $e) {
