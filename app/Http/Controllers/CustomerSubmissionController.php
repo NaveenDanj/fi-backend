@@ -200,11 +200,11 @@ class CustomerSubmissionController extends Controller
 
             $submission->status = $request->status;
             $submission->update();
-
-            $this->handleRefereeCommision($submission);
-
             // notify the referee
             $referee = Referee::where('id' , $submission->refereeId)->first();
+
+            $this->handleRefereeCommision($submission,$referee);
+
             $notification_data = "Submission status has been changed!";
             Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
             $res = $this->handlePushNotificationSend($referee,$submission);
@@ -230,10 +230,11 @@ class CustomerSubmissionController extends Controller
                 $submission->status = $request->status;
                 $submission->update();
 
-                $this->handleRefereeCommision($submission);
-
                 // notify the referee
                 $referee = Referee::where('id' , $submission->refereeId)->first();
+
+                $this->handleRefereeCommision($submission,$referee);
+
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
                 
@@ -251,10 +252,19 @@ class CustomerSubmissionController extends Controller
 
     public function handlePushNotificationSend($referee,$submission){
         try {
-            $title = 'Your submission `'.$submission->name.'` '.$submission->status;
-            $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
-            $response = $this->sendPushMessage($title,$description,$referee->fcm);
-            return $response;
+            if($submission->status == 'Activated'){
+                $title = 'Congrats! You Earned AED 500';
+                $description = 'Wohoo you just got AED 500 richer! You can redeem your earnings today. Your submission `'.$submission->name.'` '.$submission->status;
+                $response = $this->sendPushMessage($title,$description,$referee->fcm);
+                return $response;
+            }else{
+                $title = 'Your submission `'.$submission->name.'` '.$submission->status;
+                $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
+                $response = $this->sendPushMessage($title,$description,$referee->fcm);
+                return $response;
+            }
+    
+
         } catch (\Exception $e) {
             return false;
         }
@@ -301,10 +311,12 @@ class CustomerSubmissionController extends Controller
             $submission->statusRemarks = $request->statusRemarks;
             $submission->update();
 
-            $this->handleRefereeCommision($submission);
-
             // notify the referee
             $referee = Referee::where('id' , $submission->refereeId)->first();
+
+            $this->handleRefereeCommision($submission,$referee);
+
+
             $notification_data = "Submission Remark Updated";
             Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
 
@@ -330,7 +342,7 @@ class CustomerSubmissionController extends Controller
                 $submission->statusRemarks = $request->statusRemarks;
                 $submission->update();
 
-                $this->handleRefereeCommision($submission);
+                $this->handleRefereeCommision($submission,$referee);
 
                 // notify the referee
                 $referee = Referee::where('id' , $submission->refereeId)->first();
@@ -348,9 +360,6 @@ class CustomerSubmissionController extends Controller
         }
 
     }
-
-
-
 
 
 
