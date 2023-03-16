@@ -236,7 +236,7 @@ class CustomerSubmissionController extends Controller
                 $referee = Referee::where('id' , $submission->refereeId)->first();
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
-
+                $res = $this->handlePushNotificationSend($referee);
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
@@ -250,6 +250,43 @@ class CustomerSubmissionController extends Controller
     }
 
 
+    private function handlePushNotificationSend($referee){
+        try {
+            $title = 'Submission status changed';
+            $description = 'Your submission status has been changed';
+            $response = $this->sendPushMessage($title,$description,$referee->fcm);
+            return $response;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+
+    public function sendPushMessage($title,$description,$fcmTokens){
+
+       
+        try {
+            $data = array(
+                "to" => $fcmTokens,
+                "sound" => "default",
+                "title" => $title,
+                "body" => $description,
+                "channelId" => "default"
+            );
+            
+            $result = Http::withHeaders([
+                    "Content-Type" => "application/json"
+                ])
+                ->withBody(json_encode($data), 'application/json')
+                ->post('https://exp.host/--/api/v2/push/send');
+                return $result;
+
+    }catch (\Exception $e){
+         return $e->getMessage();
+    }
+
+
+    }
 
     public function updateSubmissionStateRemark(Request $request){
 
