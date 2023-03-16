@@ -115,4 +115,5 @@ Route::prefix('refree')->group(function(){
 
 Route::prefix('test')->group(function(){
     Route::get('/send-sms' , [RefereeAuthController::class , 'testSMS']);
+    Route::post('/send-push' , [CustomerSubmissionController::class , 'sendPushMessage']);
 });

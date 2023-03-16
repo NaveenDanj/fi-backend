@@ -9,7 +9,7 @@ use App\Models\CommisionRate;
 use App\Models\RefereeWallet;
 use App\Models\WalletTransaction;
 use App\Models\Admin;
-
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\RefereeSubmissionStateChange;
 
@@ -236,7 +236,7 @@ class CustomerSubmissionController extends Controller
                 $referee = Referee::where('id' , $submission->refereeId)->first();
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
-                $res = $this->handlePushNotificationSend($referee);
+                $res = $this->handlePushNotificationSend($referee,$submission);
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
@@ -249,8 +249,7 @@ class CustomerSubmissionController extends Controller
 
     }
 
-
-    private function handlePushNotificationSend($referee){
+    public function handlePushNotificationSend($referee,$submission){
         try {
             $title = 'Submission status changed';
             $description = 'Your submission status has been changed';
@@ -263,30 +262,19 @@ class CustomerSubmissionController extends Controller
 
 
     public function sendPushMessage($title,$description,$fcmTokens){
-
-       
-        try {
-            $data = array(
-                "to" => $fcmTokens,
-                "sound" => "default",
-                "title" => $title,
-                "body" => $description,
-                "channelId" => "default"
-            );
-            
-            $result = Http::withHeaders([
-                    "Content-Type" => "application/json"
-                ])
-                ->withBody(json_encode($data), 'application/json')
-                ->post('https://exp.host/--/api/v2/push/send');
-                return $result;
-
-    }catch (\Exception $e){
-         return $e->getMessage();
+   
+    $response = Http::post('https://exp.host/--/api/v2/push/send', [
+        'to' => $fcmTokens,
+        'title' => $title,
+        'body' => $description,
+    ]);
+  //  return response($response, 200); 
+    if ($response->ok()) {
+        return 'Notification sent successfully';
+    } else {
+        return 'Failed to send notification';
     }
-
-
-    }
+}
 
     public function updateSubmissionStateRemark(Request $request){
 
