@@ -127,8 +127,6 @@ class StatController extends Controller
             ->get();
 
             
-
-          //  $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count')->groupBy('status')->get();
             $submissionStatusCount = CustomerSubmission::selectRaw('status, count(*) as count, (count(*) * 100 / sum(count(*)) over ()) as percentage')
                                 ->groupBy('status')
                                 ->get();
@@ -143,7 +141,35 @@ class StatController extends Controller
 
 
         }else{
-            $stats = Referee::where('introducerId' , $user->id)->get();
+
+            $submissions = $this->getSubmissionsBelongsToIntroducer($user->id);
+             $referee = Referee::where('introducerId' , $user->id)->get();
+
+            $refereesCount = Referee::where('introducerId' , $user->id)->get()->count();
+            $todayReferees = Referee::where('created_at', '>', Carbon::now()->subDays(1)->toDateTimeString())
+                         ->where('introducerId', $user->id)
+                         ->count();
+
+            $lastTenDayReferees = Referee::where('created_at', '>', Carbon::now()->subDays(10)->toDateTimeString())
+            ->where('introducerId', $user->id)
+            ->count();
+            $lastThirtyDaysReferees = Referee::where('created_at', '>', Carbon::now()->subDays(30)->toDateTimeString())
+            ->where('introducerId', $user->id)
+            ->count();
+            $totalSubmissionCount = $submissions->count();
+
+           $totalSubmissions = collect($submissions)->count();
+           $submissionStatusCount = collect($submissions)->groupBy('status')->map(function ($statusGroup) use ($totalSubmissions) {
+           $count = $statusGroup->count();
+           $percentage = round($count / $totalSubmissions * 100, 2);
+           return [
+           'status' => $statusGroup->first()->status, // use the first item in the group to get the status value
+           'count' => $count,
+           'percentage' => $percentage
+    ];
+          }); 
+
+
         }
 
         return response()->json([
@@ -164,6 +190,20 @@ class StatController extends Controller
             'daySubmissionsCount' => $daySubmissionsCount,
         ]);
 
+    }
+
+
+    private function getSubmissionsBelongsToIntroducer($id){
+
+        $referees_belongs_to_introducer = Referee::where('introducerId' , $id)->get();
+        $referees = [];
+
+        foreach ($referees_belongs_to_introducer as $referee){
+            $referees[] = $referee->id;
+        }
+
+        $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
+        return $submissions;
     }
 
 }
