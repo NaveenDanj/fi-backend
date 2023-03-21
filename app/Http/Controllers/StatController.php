@@ -115,9 +115,6 @@ class StatController extends Controller
                 return $b['submission_count'] - $a['submission_count'];
             });
 
-
-
-
             $registeredRefereesDays = Referee::selectRaw('DATE(created_at) as date, COUNT(*) as count, (COUNT(*) * 100 / sum(COUNT(*)) over ()) as percentage')
             ->groupBy('date')
             ->get();
@@ -159,16 +156,16 @@ class StatController extends Controller
             $totalSubmissionCount = $submissions->count();
 
            $totalSubmissions = collect($submissions)->count();
-           $submissionStatusCount = collect($submissions)->groupBy('status')->map(function ($statusGroup) use ($totalSubmissions) {
+           $submissionStatusCount = collect($submissions)->groupBy('id')->map(function ($statusGroup) use ($totalSubmissions) {
            $count = $statusGroup->count();
            $percentage = round($count / $totalSubmissions * 100, 2);
+          
            return [
            'status' => $statusGroup->first()->status, // use the first item in the group to get the status value
            'count' => $count,
            'percentage' => $percentage
-    ];
+           ];
           }); 
-
 
         }
 

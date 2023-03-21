@@ -377,13 +377,24 @@ class CustomerSubmissionController extends Controller
         $referees_belongs_to_introducer = Referee::where('introducerId' , $id)->get();
         $referees = [];
 
+
+
         foreach ($referees_belongs_to_introducer as $referee){
             $referees[] = $referee->id;
         }
+        $submissionsByReferees = CustomerSubmission::whereIn('refereeId', $referees)->get();
+        $submissionsByStaff = CustomerSubmission::where('assignStaff', $id)->get();
 
-        $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
+        $submissions = $submissionsByReferees->merge($submissionsByStaff);
+
+     //   $submissions = CustomerSubmission::whereIn('refereeId' , $referees)->get();
         return $submissions;
     }
+
+
+
+
+
 
     private function getSubmissionIntroducer($id){
         $submissions = CustomerSubmission::where('id' , $id)->first();
@@ -435,6 +446,64 @@ class CustomerSubmissionController extends Controller
         ]);
 
         return 0;
+
+    }
+
+
+
+    public function updateSubmissionAssignStaff(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'submission_id' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $submission = CustomerSubmission::where('id' , $request->submission_id)->first();
+
+        if(!$submission){
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        // check if admin is whether a admin or introducer
+        $introducer_user = $request->user();
+
+
+        if($introducer_user->role == 'admin'){
+
+            $submission->assignStaff = $request->assign_introducer;
+            $submission->update();
+
+            return response()->json([
+                'message' => 'Submission Assign successfully',
+                'submission' => $submission
+            ]);
+
+        }else{
+
+            $belongs_to = $this->getSubmissionIntroducer($submission->id);
+
+            if($belongs_to->id != $introducer_user->id){
+
+                return response()->json([
+                    'message' => 'Unauthorized!',
+                ] , 403);
+
+            }else{
+
+                $submission->assignStaff = $request->assign_introducer;
+                $submission->update();
+
+                return response()->json([
+                    'message' => 'Submission Assign successfully',
+                    'submission' => $submission
+                ]);
+
+            }
+
+        }
 
     }
 

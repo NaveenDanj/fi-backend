@@ -24,7 +24,8 @@ class CustomerSubmission extends Model
 
         'consent_of_lead',
         'contacted_by_FCB',
-        'statusRemarks'
+        'statusRemarks',
+        'assignStaff',
 
     ];
 
