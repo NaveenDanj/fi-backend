@@ -155,17 +155,7 @@ class StatController extends Controller
             ->count();
             $totalSubmissionCount = $submissions->count();
 
-           $totalSubmissions = collect($submissions)->count();
-           $submissionStatusCount = collect($submissions)->groupBy('id')->map(function ($statusGroup) use ($totalSubmissions) {
-           $count = $statusGroup->count();
-           $percentage = round($count / $totalSubmissions * 100, 2);
-          
-           return [
-           'status' => $statusGroup->first()->status, // use the first item in the group to get the status value
-           'count' => $count,
-           'percentage' => $percentage
-           ];
-          }); 
+       
 
         }
 

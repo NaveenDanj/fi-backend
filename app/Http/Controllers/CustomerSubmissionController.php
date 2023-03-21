@@ -362,6 +362,60 @@ class CustomerSubmissionController extends Controller
     }
 
 
+    public function updateSubmissionIntroducerRemark(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'submission_id' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $submission = CustomerSubmission::where('id' , $request->submission_id)->first();
+
+        if(!$submission){
+            return response()->json(['message' => 'Submission not found'], 404);
+        }
+
+        $introducer_user = $request->user();
+
+
+        if($introducer_user->role == 'admin'){
+
+            $submission->introducerRemarks = $request->introducerRemarks;
+            $submission->update();
+
+            return response()->json([
+                'message' => 'Introducer remark update successfully',
+            ]);
+
+        }else{
+
+            $belongs_to = $this->getSubmissionIntroducer($submission->id);
+
+
+            if($belongs_to->id != $introducer_user->id){
+
+                return response()->json([
+                    'message' => 'Unauthorized!',
+                ] , 403);
+
+            }else{
+                
+            $submission->introducerRemarks = $request->introducerRemarks;
+            $submission->update();
+
+                return response()->json([
+                    'message' => 'Introducer remark update successfully',
+                ]);
+
+            }
+
+        }
+
+    }
+
 
     private function checkSubmission($id){
 
