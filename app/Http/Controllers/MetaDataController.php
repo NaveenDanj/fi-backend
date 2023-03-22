@@ -11,12 +11,13 @@ class MetaDataController extends Controller
 
     public function loadMetaData(Request $request){
 
-        $introducers = Admin::where('role' , 'introducer')->paginate(1000000000000000);
+        $introducers = Admin::where('role', 'introducer')
+                    ->orderBy('fullname')
+                    ->get();
 
         return response()->json([
             'introducers' => $introducers
         ]);
-
     }
 
 
