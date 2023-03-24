@@ -17,7 +17,9 @@ class MetaDataController extends Controller
 
         return response()->json([
             'introducers' => $introducers,
-            'data' => $introducers
+            'introducers' => [
+                'data' => $introducers
+            ]
         ]);
     }
 
