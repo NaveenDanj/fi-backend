@@ -453,7 +453,10 @@ class CustomerSubmissionController extends Controller
     private function getSubmissionIntroducer($id){
         $submissions = CustomerSubmission::where('id' , $id)->first();
         $referee = Referee::where('id' , $submissions->refereeId)->first();
+
         $introducer_user = Admin::where('id' , $referee->introducerId )->first();
+        $introducer_user = Admin::where('id', $submissions->assignStaff)->first();
+
         return $introducer_user;
     }
 
