@@ -53,7 +53,11 @@ class CustomerSubmissionController extends Controller
         ]);
 
         // returned the saved user object
-
+        if($submission){
+            $introducer = getRefreeIntroducer(user()->id);
+              $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
+        }
+    
         return response()->json([
             'message' => 'Submission added successfully!',
             'submission' => $submission
@@ -170,6 +174,14 @@ class CustomerSubmissionController extends Controller
     }
 
 
+    // Get Referee introducer detials
+    public function getRefreeIntroducer($id){
+        $referee = Referee::where('id' , $id)->get();
+        $introducer = Admin::where('id',$referee->introducerId)->get();
+        return $introducer;
+    }
+
+
     public function updateSubmissionState(Request $request){
 
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
@@ -261,6 +273,7 @@ class CustomerSubmissionController extends Controller
                 $title = 'Your submission `'.$submission->name.'` '.$submission->status;
                 $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
                 $response = $this->sendPushMessage($title,$description,$referee->fcm);
+                $msg = $this->sendPushMessageToWeb('submission status updated!','Submission '.$submission->name.'status changed.',''); 
                 return $response;
             }
     
@@ -271,7 +284,7 @@ class CustomerSubmissionController extends Controller
     }
 
 
-    public function sendPushMessage($title,$description,$fcmTokens){
+public function sendPushMessage($title,$description,$fcmTokens){
    
     $response = Http::post('https://exp.host/--/api/v2/push/send', [
         'to' => $fcmTokens,
@@ -285,6 +298,37 @@ class CustomerSubmissionController extends Controller
         return 'Failed to send notification';
     }
 }
+
+
+public function sendPushMessageToWeb($title,$description,$fcmTokens){
+    $adminsFcm = Admin::where('role', 'admin')->whereNotNull('fcm')->pluck('fcm')->toArray();
+    $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
+
+    $response = Http::withHeaders([
+        'Content-Type'=>'application/json',
+        'Authorization' => "key=AAAANlvvNdQ:APA91bFKY7fPxxoUFH-CS_C65pZdy8oPWjNH0mUOyBxAqmdDiqIrEeiskUFDrixNJ2w7_FHfuu8niOJHqNJJbVCvwzABTO518Sz-y3B3IypMPpU5OfbihwYlNYo7R886U6SiRETWq9Kn",
+        'Content-Type' => 'application/json'
+   ])->post('https://fcm.googleapis.com/fcm/send', [
+        'to' => $allFcmTokens,
+        'notification' => [
+            'title' =>$title,
+            'body' => $description,
+            'mutable_content' => true,
+            'sound' => 'Tri-tone'
+        ],
+        'data' => [
+            'url' => '',
+            'dl' => '/all-submission'
+        ]
+    ]);
+    
+    if ($response->ok()) {
+        return 'Notification sent successfully';
+    } else {
+        return  'Notification sent failed';
+    }
+}
+
 
     public function updateSubmissionStateRemark(Request $request){
 
@@ -563,5 +607,4 @@ class CustomerSubmissionController extends Controller
         }
 
     }
-
 }

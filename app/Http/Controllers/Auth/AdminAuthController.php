@@ -114,6 +114,29 @@ class AdminAuthController extends Controller
 
     }
 
+    public function updateAdminFcmToken(Request $request){
+
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
+            'fcmToken' => 'string',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $admins = $request->user();
+
+        $admins->fcm =  $request->fcmToken;
+        $admins->update();
+
+        return response()->json([
+            'message' => 'fcm updated'
+        ]);
+    }
+
+    
+
     public function getAllAdmin(Request $request){
 
         $admins = Admin::where('role' , 'admin')->paginate(15);

@@ -94,6 +94,7 @@ Route::prefix('submission')->group(function (){
 Route::prefix('introducer')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/add-introducer' , [IntroducerController::class , 'addIntroducer'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin' , 'roleAdminRequired'])->post('/delete-introducer' , [AdminAuthController::class , 'deleteIntroducer'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/introducer-fcm-update' , [AdminAuthController::class , 'updateAdminFcmToken'] );
 });
 
 Route::prefix('meta')->group(function (){
@@ -117,5 +118,5 @@ Route::prefix('refree')->group(function(){
 
 Route::prefix('test')->group(function(){
     Route::get('/send-sms' , [RefereeAuthController::class , 'testSMS']);
-    Route::post('/send-push' , [CustomerSubmissionController::class , 'sendPushMessage']);
+    Route::post('/send-push' , [CustomerSubmissionController::class , 'sendPushMessageToWeb']);
 });
