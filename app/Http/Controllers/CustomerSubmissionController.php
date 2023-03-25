@@ -53,10 +53,10 @@ class CustomerSubmissionController extends Controller
         ]);
 
         // returned the saved user object
-        if($submission){
-            $introducer = getRefreeIntroducer(user()->id);
-              $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
-        }
+        // if($submission){
+        //     $introducer = getRefreeIntroducer(user()->id);
+        //       $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
+        // }
     
         return response()->json([
             'message' => 'Submission added successfully!',
