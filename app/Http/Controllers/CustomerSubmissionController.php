@@ -499,8 +499,9 @@ public function sendPushMessageToWeb($title,$description,$fcmTokens){
         $referee = Referee::where('id' , $submissions->refereeId)->first();
 
         $introducer_user = Admin::where('id' , $referee->introducerId )->first();
-        $introducer_user = Admin::where('id', $submissions->assignStaff)->first();
-
+        if($submissions->assignStaff!=null){
+            $introducer_user = Admin::where('id', $submissions->assignStaff)->first();
+        }
         return $introducer_user;
     }
 
