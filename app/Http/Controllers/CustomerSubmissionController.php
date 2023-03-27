@@ -273,7 +273,7 @@ class CustomerSubmissionController extends Controller
                 $title = 'Your submission `'.$submission->name.'` '.$submission->status;
                 $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
                 $response = $this->sendPushMessage($title,$description,$referee->fcm);
-                $msg = $this->sendPushMessageToWeb('submission status updated!','Submission '.$submission->name.'status changed.',''); 
+                // $msg = $this->sendPushMessageToWeb('submission status updated!','Submission '.$submission->name.'status changed.',''); 
                 return $response;
             }
     
