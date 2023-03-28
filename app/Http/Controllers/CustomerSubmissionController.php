@@ -52,11 +52,11 @@ class CustomerSubmissionController extends Controller
             'remarks' => $request->remarks
         ]);
 
-        // returned the saved user object
-        // if($submission){
-        //     $introducer = getRefreeIntroducer(user()->id);
-        //       $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
-        // }
+
+        if($submission){
+            $introducer = getRefreeIntroducer(user()->id);
+              $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
+        }
     
         return response()->json([
             'message' => 'Submission added successfully!',
@@ -302,14 +302,14 @@ public function sendPushMessage($title,$description,$fcmTokens){
 
 public function sendPushMessageToWeb($title,$description,$fcmTokens){
     $adminsFcm = Admin::where('role', 'admin')->whereNotNull('fcm')->pluck('fcm')->toArray();
-   // $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
+    $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
 
     $response = Http::withHeaders([
         'Content-Type'=>'application/json',
         'Authorization' => "key=AAAANlvvNdQ:APA91bFKY7fPxxoUFH-CS_C65pZdy8oPWjNH0mUOyBxAqmdDiqIrEeiskUFDrixNJ2w7_FHfuu8niOJHqNJJbVCvwzABTO518Sz-y3B3IypMPpU5OfbihwYlNYo7R886U6SiRETWq9Kn",
         'Content-Type' => 'application/json'
    ])->post('https://fcm.googleapis.com/fcm/send', [
-        'registration_ids' => $adminsFcm,
+        'registration_ids' => $allFcmTokens,
         'notification' => [
             'title' =>$title,
             'body' => $description,
