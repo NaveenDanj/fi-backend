@@ -249,7 +249,7 @@ class CustomerSubmissionController extends Controller
 
                 $notification_data = "Submission status has been changed!";
                 Notification::send($referee, new RefereeSubmissionStateChange($referee , $submission));
-                
+                $res = $this->handlePushNotificationSend($referee,$submission);
 
                 return response()->json([
                     'message' => 'submission status updated successfully',
