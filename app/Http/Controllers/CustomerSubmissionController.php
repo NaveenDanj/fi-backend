@@ -54,8 +54,8 @@ class CustomerSubmissionController extends Controller
 
 
         if($submission){
-            $introducer = getRefreeIntroducer(user()->id);
-          //    $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,$introducer->fcm); 
+          //  $introducer = getRefreeIntroducer(user()->id);
+              $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,''); 
         }
     
         return response()->json([
