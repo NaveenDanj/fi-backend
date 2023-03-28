@@ -301,14 +301,14 @@ public function sendPushMessage($title,$description,$fcmTokens){
 
 public function sendPushMessageToWeb($title,$description,$fcmTokens){
     $adminsFcm = Admin::where('role', 'admin')->whereNotNull('fcm')->pluck('fcm')->toArray();
-    $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
+   // $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
 
     $response = Http::withHeaders([
         'Content-Type'=>'application/json',
         'Authorization' => "key=AAAANlvvNdQ:APA91bFKY7fPxxoUFH-CS_C65pZdy8oPWjNH0mUOyBxAqmdDiqIrEeiskUFDrixNJ2w7_FHfuu8niOJHqNJJbVCvwzABTO518Sz-y3B3IypMPpU5OfbihwYlNYo7R886U6SiRETWq9Kn",
         'Content-Type' => 'application/json'
    ])->post('https://fcm.googleapis.com/fcm/send', [
-        'registration_ids' => $allFcmTokens,
+        'registration_ids' => $adminsFcm,
         'notification' => [
             'title' =>$title,
             'body' => $description,
