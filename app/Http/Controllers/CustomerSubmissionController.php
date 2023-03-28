@@ -52,18 +52,17 @@ class CustomerSubmissionController extends Controller
             'remarks' => $request->remarks
         ]);
 
-
-        // if($submission){
-        //   //  $introducer = getRefreeIntroducer(user()->id);
-        //       $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission '.$request->name,''); 
-        // }
-        $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission ',''); 
-        return response()->json([
+        $response = response()->json([
             'message' => 'Submission added successfully!',
             'submission' => $submission
         ]);
 
+        if ($response->getStatusCode() === 200) {
+          //   $introducer = getRefreeIntroducer(user()->id);
+            sendPushMessageToWeb('New Submission updated!','New Submission ','');
+        }
 
+        return $response;
     }
 
     public function getMySubmissions(Request $request){
