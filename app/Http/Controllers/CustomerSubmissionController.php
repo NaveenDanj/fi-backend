@@ -61,7 +61,7 @@ class CustomerSubmissionController extends Controller
 
         if ($response->getStatusCode() === 200) {
             $introducer = $this->getRefreeIntroducer($request->user()->id);
-            $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission'. $submission->name,$introducer->fcm);
+            $msg = $this->sendPushMessageToWeb('New Submission updated!','New Submission - '. $submission->name,$introducer->fcm);
         }
 
         return $response;
