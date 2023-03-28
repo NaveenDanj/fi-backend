@@ -19,6 +19,8 @@ class CustomerSubmissionController extends Controller
     use Upload;
 
     public function customerSubmission1(Request $request){
+        $introducer = null;
+
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(),[
             'name' => 'required|string|max:100',
             'company' =>  'string|max:512',
