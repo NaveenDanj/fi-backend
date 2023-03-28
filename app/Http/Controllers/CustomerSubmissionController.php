@@ -273,7 +273,7 @@ class CustomerSubmissionController extends Controller
                 $title = 'Your submission `'.$submission->name.'` '.$submission->status;
                 $description = 'Submission `'.$submission->name.'` status has been changed. '.$submission->statusRemarks;
                 $response = $this->sendPushMessage($title,$description,$referee->fcm);
-                // $msg = $this->sendPushMessageToWeb('submission status updated!','Submission '.$submission->name.'status changed.',''); 
+                 $msg = $this->sendPushMessageToWeb('Submission status updated!','Submission '.$submission->name.'status changed.',''); 
                 return $response;
             }
     
@@ -302,14 +302,14 @@ public function sendPushMessage($title,$description,$fcmTokens){
 
 public function sendPushMessageToWeb($title,$description,$fcmTokens){
     $adminsFcm = Admin::where('role', 'admin')->whereNotNull('fcm')->pluck('fcm')->toArray();
-    $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
+   // $allFcmTokens = array_merge($adminsFcm, $fcmTokens);
 
     $response = Http::withHeaders([
         'Content-Type'=>'application/json',
         'Authorization' => "key=AAAANlvvNdQ:APA91bFKY7fPxxoUFH-CS_C65pZdy8oPWjNH0mUOyBxAqmdDiqIrEeiskUFDrixNJ2w7_FHfuu8niOJHqNJJbVCvwzABTO518Sz-y3B3IypMPpU5OfbihwYlNYo7R886U6SiRETWq9Kn",
         'Content-Type' => 'application/json'
    ])->post('https://fcm.googleapis.com/fcm/send', [
-        'to' => $allFcmTokens,
+        'registration_ids' => $adminsFcm,
         'notification' => [
             'title' =>$title,
             'body' => $description,
@@ -328,6 +328,8 @@ public function sendPushMessageToWeb($title,$description,$fcmTokens){
         return  'Notification sent failed';
     }
 }
+
+
 
 
     public function updateSubmissionStateRemark(Request $request){
