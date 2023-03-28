@@ -177,9 +177,10 @@ class CustomerSubmissionController extends Controller
 
     // Get Referee introducer detials
     public function getRefreeIntroducer($id){
+        $referee = null;
         $referee = Referee::where('id' , $id)->get();
-     //   $introducer = Admin::where('id',$referee->introducerId)->get();
-        return $referee;
+        $introducer = Admin::where('id',$referee->introducerId)->get();
+        return $introducer;
     }
 
 
