@@ -58,7 +58,7 @@ class CustomerSubmissionController extends Controller
         ]);
 
         if ($response->getStatusCode() === 200) {
-            $introducer = getRefreeIntroducer(user()->id);
+            $introducer -> getRefreeIntroducer(user()->id);
           //  sendPushMessageToWeb('New Submission updated!','New Submission ','');
         }
 
