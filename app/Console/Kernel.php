@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->call('App\Http\Controllers\CustomerSubmissionController@checkSubmissionStatusIsSubmitted')
-        ->everyMinute();
+        ->daily();
         // $schedule->command('inspire')->hourly();
     }
 
