@@ -88,6 +88,7 @@ Route::prefix('submission')->group(function (){
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/update-submission-introducer-remark' , [CustomerSubmissionController::class , 'updateSubmissionIntroducerRemark'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/view-introducer-submissions' , [CustomerSubmissionController::class , 'getSubmissionForIntroducer'] );
     Route::middleware(['auth:sanctum' , 'abilities:admin'])->post('/update-submission-assign-introducer' , [CustomerSubmissionController::class , 'updateSubmissionAssignStaff'] );
+    Route::middleware(['auth:sanctum' , 'abilities:admin'])->get('/get-submission-pending' , [CustomerSubmissionController::class , 'checkSubmissionStatusIsSubmitted'] );
 });
 
 

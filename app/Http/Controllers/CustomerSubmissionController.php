@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Traits\Upload;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UpdatedSubmissions;
 use App\Models\CustomerSubmission;
 use App\Models\Referee;
 use App\Models\CommisionRate;
@@ -12,6 +14,8 @@ use App\Models\Admin;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\RefereeSubmissionStateChange;
+use Carbon\Carbon;
+
 
 class CustomerSubmissionController extends Controller
 {
@@ -111,9 +115,7 @@ class CustomerSubmissionController extends Controller
             foreach($_referees as $ref){
                 $referee[] = $ref->id;
             }
-
             $my_submissions = CustomerSubmission::whereIn('refereeId' , $referee)->get();
-
         }
 
         // $my_submissions = CustomerSubmission::paginate(15);
@@ -610,4 +612,49 @@ public function sendPushMessageToWeb($title,$description,$fcmTokens){
         }
 
     }
+
+
+    public function checkSubmissionStatusIsSubmitted(){
+        $pendingSubmissions=[];
+        $pendingSubmissions = CustomerSubmission::where('updated_at', '<', Carbon::now()->subDays(2)->toDateTimeString())
+            ->where('status', '=', 'Submitted')
+            ->get();
+    
+        $submissionsByIntroducer = [];
+        foreach($pendingSubmissions as $submission){
+            $referee =  Referee::where('id', $submission->refereeId)->first();
+            if (!$referee) {
+                continue; // Skip this submission if referee not found
+            }
+            $submission->referee = $referee;
+            $introducer = Admin::where('id', $referee->introducerId)->first();
+            if (!$introducer) {
+                continue; // Skip this submission if introducer not found
+            }
+            $submission->introducer = $introducer;
+    
+            // Group submissions by introducer
+            if (!isset($submissionsByIntroducer[$introducer->email])) {
+                $submissionsByIntroducer[$introducer->email] = [];
+            }
+            $submissionsByIntroducer[$introducer->email][] = $submission;
+        }
+    
+        // Send email to each introducer with their submissions
+        foreach ($submissionsByIntroducer as $email => $submissions) {
+            Mail::to($email)->send(new UpdatedSubmissions($submissions));
+        }
+    
+        if(count($pendingSubmissions) > 0) {
+            return response()->json([
+                'message' => 'Submissions report emails sent',
+            ]);
+        }
+    
+        return response()->json([
+            'message' => 'No submissions found',
+        ]);
+    }
+
+
 }
